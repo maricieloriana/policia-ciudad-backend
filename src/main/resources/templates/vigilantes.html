@@ -26,6 +26,11 @@
            th:text="${mensajeExito}"
            role="status">
         </p>
+        <!-- Explica por qué no se pudo eliminar un vigilante -->
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
 
         <!-- Informa cuando no hay registros -->
         <p th:if="${#lists.isEmpty(vigilantes)}">
@@ -54,6 +59,13 @@
                         <a th:href="@{/vigilantes/{id}/editar(id=${vigilante.id})}">
                             Editar
                         </a>
+
+                        <!-- Solicita confirmación antes de enviar la eliminación -->
+                        <form th:action="@{/vigilantes/{id}/eliminar(id=${vigilante.id})}"
+                              method="post"
+                              onsubmit="return confirm('¿Querés eliminar este vigilante?');">
+                            <button type="submit">Eliminar</button>
+                        </form>
                     </td>
                 </tr>
             </tbody>

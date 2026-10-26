@@ -13,6 +13,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.Authentication;
 import com.policiaciudad.dto.VigilanteDTO;
 import org.springframework.web.bind.annotation.PathVariable;
+import com.policiaciudad.exception.RecursoEnUsoException;
+import com.policiaciudad.exception.RecursoNoEncontradoException;
 
 @Controller
 public class VigilanteWebController {
@@ -128,5 +130,28 @@ public class VigilanteWebController {
             modelo.addAttribute("mensajeError", excepcion.getMessage());
             return "vigilante-formulario";
         }
+    }
+    @PostMapping("/vigilantes/{id}/eliminar")
+    public String eliminar(
+            @PathVariable int id,
+            RedirectAttributes mensajes) {
+
+        try {
+            // El servicio comprueba que no tenga contrataciones ni cuenta asociada
+            servicio.eliminar(id);
+
+            mensajes.addFlashAttribute(
+                    "mensajeExito", "Vigilante eliminado correctamente.");
+
+        } catch (DatosInvalidosException
+                | RecursoNoEncontradoException
+                | RecursoEnUsoException excepcion) {
+
+            // Conserva el mensaje para mostrarlo después de volver a la lista
+            mensajes.addFlashAttribute(
+                    "mensajeError", excepcion.getMessage());
+        }
+
+        return "redirect:/vigilantes";
     }
 }

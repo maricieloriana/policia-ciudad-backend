@@ -223,6 +223,10 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.POST, "/vigilantes/{id}/editar")
                         .hasRole("ADMINISTRADOR")
                         
+                        // Solo el administrador puede eliminar vigilantes desde la web
+                        .requestMatchers(HttpMethod.POST, "/vigilantes/{id}/eliminar")
+                        .hasRole("ADMINISTRADOR")
+                        
                         // Las demás rutas quedan bloqueadas por ahora
                         .anyRequest().denyAll() //bloquea las rutas que aún no habilitamos
                 )
