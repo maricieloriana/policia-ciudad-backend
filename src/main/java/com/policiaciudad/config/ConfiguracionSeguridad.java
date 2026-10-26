@@ -227,6 +227,18 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.POST, "/vigilantes/{id}/eliminar")
                         .hasRole("ADMINISTRADOR")
                         
+                        // Permite consultar la lista web a administradores e investigadores
+                        .requestMatchers(HttpMethod.GET, "/contrataciones")
+                        .hasAnyRole("ADMINISTRADOR", "INVESTIGADOR")
+                        
+                        // Solo el administrador puede abrir el formulario de registro
+                        .requestMatchers(HttpMethod.GET, "/contrataciones/nueva")
+                        .hasRole("ADMINISTRADOR")
+
+                        // Solo el administrador puede registrar desde la web
+                        .requestMatchers(HttpMethod.POST, "/contrataciones")
+                        .hasRole("ADMINISTRADOR")
+                        
                         // Las demás rutas quedan bloqueadas por ahora
                         .anyRequest().denyAll() //bloquea las rutas que aún no habilitamos
                 )

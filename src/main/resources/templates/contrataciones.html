@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrataciones | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+    <header>
+        <h1>Contrataciones</h1>
+        <a th:href="@{/inicio}">Volver al inicio</a>
+    </header>
+
+    <main>
+        <h2>Contrataciones registradas</h2>
+        <!-- Solo el administrador ve la opción de registrar -->
+        <p th:if="${esAdministrador}">
+        <a th:href="@{/contrataciones/nueva}">Registrar contratación</a>
+        </p>
+
+        <!-- Confirma el registro después de volver a la lista -->
+        <p th:if="${mensajeExito}"
+           th:text="${mensajeExito}"
+           role="status">
+        </p>
+
+        <!-- Informa cuando la consulta no devuelve registros -->
+        <p th:if="${#lists.isEmpty(contrataciones)}">
+            No hay contrataciones registradas.
+        </p>
+
+        <table th:unless="${#lists.isEmpty(contrataciones)}">
+            <caption>Datos de las contrataciones registradas</caption>
+
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Sucursal</th>
+                    <th scope="col">ID del vigilante</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Con arma</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <!-- Genera una fila por cada contratación -->
+                <tr th:each="contratacion : ${contrataciones}">
+                    <td th:text="${contratacion.id}">1</td>
+                    <td th:text="${contratacion.codigoSucursal}">2001</td>
+                    <td th:text="${contratacion.idVigilante}">1</td>
+                    <td th:text="${contratacion.fecha}">2026-10-13</td>
+                    <td th:text="${contratacion.conArma ? 'Sí' : 'No'}">
+                        Sí
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+</body>
+</html>

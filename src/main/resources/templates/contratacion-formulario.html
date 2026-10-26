@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar contratación | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+    <header>
+        <h1>Registrar contratación</h1>
+        <a th:href="@{/contrataciones}">Volver a la lista</a>
+    </header>
+
+    <main>
+        <!-- Muestra los errores informados por el controlador -->
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
+
+        <!-- Se necesitan sucursales y vigilantes para registrar -->
+        <p th:if="${#lists.isEmpty(sucursales)
+                   or #lists.isEmpty(vigilantes)}"
+           role="alert">
+            Para registrar una contratación debe existir al menos
+            una sucursal y un vigilante.
+        </p>
+
+        <form th:action="@{/contrataciones}"
+              th:object="${contratacion}"
+              method="post"
+              th:unless="${#lists.isEmpty(sucursales)
+                          or #lists.isEmpty(vigilantes)}">
+
+            <div>
+                <label for="codigoSucursal">Sucursal</label>
+                <select id="codigoSucursal"
+                        th:field="*{codigoSucursal}"
+                        required>
+                    <option value="0" disabled>Seleccioná una sucursal</option>
+                    <option th:each="sucursal : ${sucursales}"
+                            th:value="${sucursal.codigo}"
+                            th:text="${sucursal.codigo + ' — ' + sucursal.domicilio}">
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label for="idVigilante">Vigilante</label>
+                <select id="idVigilante"
+                        th:field="*{idVigilante}"
+                        required>
+                    <option value="0" disabled>Seleccioná un vigilante</option>
+                    <option th:each="vigilante : ${vigilantes}"
+                            th:value="${vigilante.id}"
+                            th:text="${vigilante.nombreCompleto
+                                       + ' (ID ' + vigilante.id + ')'}">
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label for="fecha">Fecha</label>
+                <input type="date"
+                       id="fecha"
+                       th:field="*{fecha}"
+                       required>
+            </div>
+
+            <div>
+                <label for="conArma">
+                    <input type="checkbox"
+                           id="conArma"
+                           th:field="*{conArma}">
+                    Servicio con arma
+                </label>
+            </div>
+
+            <button type="submit">Guardar contratación</button>
+        </form>
+    </main>
+
+</body>
+</html>
