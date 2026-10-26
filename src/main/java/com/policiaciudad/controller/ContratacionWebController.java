@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class ContratacionWebController {
@@ -124,5 +125,29 @@ public class ContratacionWebController {
 
         // Reutiliza la tabla de contrataciones
         return "contrataciones";
+    }
+    
+    @PostMapping("/contrataciones/{id}/eliminar")
+    public String eliminar(
+            @PathVariable int id,
+            RedirectAttributes mensajes) {
+
+        try {
+            // Reutiliza la eliminación definida en el servicio
+            servicio.eliminar(id);
+
+            mensajes.addFlashAttribute(
+                    "mensajeExito",
+                    "Contratación eliminada correctamente.");
+
+        } catch (DatosInvalidosException
+                | RecursoNoEncontradoException excepcion) {
+
+            mensajes.addFlashAttribute(
+                    "mensajeError", excepcion.getMessage());
+        }
+
+        // Vuelve a la lista después de procesar la solicitud
+        return "redirect:/contrataciones";
     }
 }

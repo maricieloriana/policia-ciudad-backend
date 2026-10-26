@@ -247,6 +247,10 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.GET, "/mi-perfil")
                         .hasRole("VIGILANTE")
                         
+                        // Solo el administrador puede eliminar contrataciones desde la web
+                        .requestMatchers(HttpMethod.POST, "/contrataciones/{id}/eliminar")
+                        .hasRole("ADMINISTRADOR")
+                        
                         // Las demás rutas quedan bloqueadas por ahora
                         .anyRequest().denyAll() //bloquea las rutas que aún no habilitamos
                 )

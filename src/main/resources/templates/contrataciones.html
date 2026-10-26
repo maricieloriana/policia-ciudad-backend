@@ -25,6 +25,12 @@
            th:text="${mensajeExito}"
            role="status">
         </p>
+        
+        <!-- Muestra los errores informados por el controlador -->
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
 
         <!-- Informa cuando la consulta no devuelve registros -->
         <p th:if="${#lists.isEmpty(contrataciones)}">
@@ -41,6 +47,7 @@
                     <th scope="col">ID del vigilante</th>
                     <th scope="col">Fecha</th>
                     <th scope="col">Con arma</th>
+                    <th scope="col" th:if="${esAdministrador}">Acciones</th>
                 </tr>
             </thead>
 
@@ -51,8 +58,15 @@
                     <td th:text="${contratacion.codigoSucursal}">2001</td>
                     <td th:text="${contratacion.idVigilante}">1</td>
                     <td th:text="${contratacion.fecha}">2026-10-13</td>
-                    <td th:text="${contratacion.conArma ? 'Sí' : 'No'}">
-                        Sí
+                    <td th:text="${contratacion.conArma ? 'Sí' : 'No'}">Sí</td>
+                    <td th:if="${esAdministrador}">
+                        <form
+                            th:action="@{/contrataciones/{id}/eliminar(id=${contratacion.id})}"
+                            method="post"
+                            onsubmit="return confirm('¿Querés eliminar esta contratación?');">
+
+                            <button type="submit">Eliminar</button>
+                        </form>
                     </td>
                 </tr>
             </tbody>
