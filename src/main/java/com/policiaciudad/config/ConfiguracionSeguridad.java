@@ -258,6 +258,18 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.POST,"/contrataciones/{id}/editar")
                         .hasRole("ADMINISTRADOR")
                         
+                        // Administradores e investigadores pueden consultar sucursales
+                        .requestMatchers(HttpMethod.GET, "/sucursales")
+                        .hasAnyRole("ADMINISTRADOR", "INVESTIGADOR")
+                        
+                        // Solo el administrador puede abrir el registro de sucursales
+                        .requestMatchers(HttpMethod.GET, "/sucursales/nueva")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        // Solo el administrador puede registrar sucursales desde la web
+                        .requestMatchers(HttpMethod.POST, "/sucursales")
+                        .hasRole("ADMINISTRADOR")
+                        
                         // Las demás rutas quedan bloqueadas por ahora
                         .anyRequest().denyAll() //bloquea las rutas que aún no habilitamos
                 )

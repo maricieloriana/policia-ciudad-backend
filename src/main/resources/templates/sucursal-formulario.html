@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar sucursal | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <header>
+        <h1>Registrar sucursal</h1>
+        <a th:href="@{/sucursales}">Volver a la lista</a>
+    </header>
+
+    <main>
+        <h2>Datos de la sucursal</h2>
+
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
+
+        <p th:if="${#lists.isEmpty(entidades)}">
+            Es necesario registrar una entidad bancaria
+            antes de agregar una sucursal.
+        </p>
+
+        <form th:unless="${#lists.isEmpty(entidades)}"
+              th:action="@{/sucursales}"
+              th:object="${sucursal}"
+              method="post">
+
+            <div>
+                <label for="codigoEntidadBancaria">
+                    Entidad bancaria
+                </label>
+
+                <select id="codigoEntidadBancaria"
+                        name="codigoEntidadBancaria"
+                        required>
+
+                    <option value="" disabled
+                            th:selected="${codigoEntidadBancaria == null}">
+                        Seleccioná una entidad
+                    </option>
+
+                    <option th:each="entidad : ${entidades}"
+                            th:value="${entidad.codigo}"
+                            th:text="${entidad.codigo + ' — ' + entidad.domicilioCentral}"
+                            th:selected="${codigoEntidadBancaria != null
+                                and codigoEntidadBancaria == entidad.codigo}">
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label for="codigo">Código de sucursal</label>
+                <input type="number"
+                       id="codigo"
+                       th:field="*{codigo}"
+                       min="1"
+                       required>
+            </div>
+
+            <div>
+                <label for="domicilio">Domicilio</label>
+                <input type="text"
+                       id="domicilio"
+                       th:field="*{domicilio}"
+                       maxlength="255"
+                       required>
+            </div>
+
+            <div>
+                <label for="cantidadEmpleados">
+                    Cantidad de empleados
+                </label>
+                <input type="number"
+                       id="cantidadEmpleados"
+                       th:field="*{cantidadEmpleados}"
+                       min="0"
+                       required>
+            </div>
+
+            <button type="submit">Guardar sucursal</button>
+        </form>
+    </main>
+</body>
+</html>

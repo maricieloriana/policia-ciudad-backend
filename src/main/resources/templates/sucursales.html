@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sucursales | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <header>
+        <h1>Sucursales</h1>
+        <a th:href="@{/inicio}">Volver al inicio</a>
+    </header>
+
+    <main>
+        <h2>Sucursales registradas</h2>
+        <p th:if="${esAdministrador}">
+            <a th:href="@{/sucursales/nueva}">Registrar sucursal</a>
+        </p>
+
+        <p th:if="${mensajeExito}"
+           th:text="${mensajeExito}"
+           role="status">
+        </p>
+
+        <p th:if="${#lists.isEmpty(sucursales)}">
+            No hay sucursales registradas.
+        </p>
+
+        <table th:unless="${#lists.isEmpty(sucursales)}">
+            <caption>Datos de las sucursales registradas</caption>
+
+            <thead>
+                <tr>
+                    <th scope="col">Código</th>
+                    <th scope="col">Código de entidad bancaria</th>
+                    <th scope="col">Domicilio</th>
+                    <th scope="col">Cantidad de empleados</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="sucursal : ${sucursales}">
+                    <td th:text="${sucursal.codigo}">2001</td>
+                    <td th:text="${sucursal.codigoEntidadBancaria}">1001</td>
+                    <td th:text="${sucursal.domicilio}">Domicilio</td>
+                    <td th:text="${sucursal.cantidadEmpleados}">10</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>
