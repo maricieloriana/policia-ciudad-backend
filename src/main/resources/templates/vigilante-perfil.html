@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi perfil | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <header>
+        <h1>Mi perfil</h1>
+        <a th:href="@{/inicio}">Volver al inicio</a>
+    </header>
+
+    <main>
+        <h2>Mis datos</h2>
+
+        <p>
+            <strong>Nombre completo:</strong>
+            <span th:text="${vigilante.nombreCompleto}">Nombre</span>
+        </p>
+
+        <p>
+            <strong>Edad:</strong>
+            <span th:text="${vigilante.edad}">30</span>
+        </p>
+
+        <a th:href="@{/mis-contrataciones}">
+            Consultar mis contrataciones
+        </a>
+    </main>
+</body>
+</html>

@@ -154,4 +154,17 @@ public class VigilanteWebController {
 
         return "redirect:/vigilantes";
     }
+    
+    @GetMapping("/mi-perfil")
+    public String mostrarPerfil(
+            Model modelo,
+            Authentication autenticacion) {
+
+        // Consulta al vigilante vinculado con la cuenta autenticada
+        modelo.addAttribute(
+                "vigilante",
+                servicio.consultarPropio(autenticacion.getName()));
+
+        return "vigilante-perfil";
+    }
 }

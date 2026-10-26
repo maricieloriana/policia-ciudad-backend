@@ -243,6 +243,10 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.GET, "/mis-contrataciones")
                         .hasRole("VIGILANTE")
                         
+                        // Permite al vigilante consultar su propio perfil
+                        .requestMatchers(HttpMethod.GET, "/mi-perfil")
+                        .hasRole("VIGILANTE")
+                        
                         // Las demás rutas quedan bloqueadas por ahora
                         .anyRequest().denyAll() //bloquea las rutas que aún no habilitamos
                 )
