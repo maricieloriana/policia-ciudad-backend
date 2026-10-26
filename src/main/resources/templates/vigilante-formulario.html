@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${idVigilante != null}
+            ? 'Editar vigilante | Policía de la Ciudad'
+            : 'Registrar vigilante | Policía de la Ciudad'">
+         Vigilante
+    </title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+    <header>
+        <h1 th:text="${idVigilante != null}
+            ? 'Editar vigilante'
+            : 'Registrar vigilante'">
+            Vigilante
+        </h1>
+        <a th:href="@{/vigilantes}">Volver a la lista</a>
+    </header>
+
+    <main>
+        <!-- Muestra los errores que informe el controlador -->
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
+
+        <!-- El destino cambia según sea un registro o una edición -->
+        <form th:action="${idVigilante != null}
+              ? @{/vigilantes/{id}/editar(id=${idVigilante})}
+              : @{/vigilantes}"
+              th:object="${vigilante}"
+              method="post">
+
+            <div>
+                <label for="nombreCompleto">Nombre completo</label>
+                <input type="text"
+                       th:field="*{nombreCompleto}" 
+                       maxlength="255"
+                       required>
+            </div>
+<!-- th:field conecta cada campo del formulario con el DTO -->
+            <div>
+                <label for="edad">Edad</label>
+                <input type="number"
+                       th:field="*{edad}"
+                       min="0"
+                       step="1"
+                       required>
+            </div>
+
+            <button type="submit"
+                    th:text="${idVigilante != null}
+                    ? 'Guardar cambios'
+                    : 'Guardar vigilante'">
+                Guardar
+            </button>
+            <a th:href="@{/vigilantes}">Cancelar</a>
+        </form>
+    </main>
+
+</body>
+</html>

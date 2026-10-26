@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+    <header>
+        <h1>Policía de la Ciudad</h1>
+
+        <p>
+            Usuario:
+            <strong th:text="${nombreUsuario}">Usuario</strong>
+        </p>
+
+        <!-- El cierre de sesión utiliza POST y protección CSRF -->
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Cerrar sesión</button>
+        </form>
+    </header>
+
+    <main>
+        <h2>Inicio</h2>
+
+        <!-- Opciones del administrador -->
+        <section th:if="${esAdministrador}">
+            <h3>Administración</h3>
+            <p>Desde aquí podrás registrar, consultar y gestionar los datos.</p>
+
+            <ul>
+                <li>Entidades bancarias y sucursales</li>
+                <li><a th:href="@{/vigilantes}">Consultar vigilantes</a></li>
+                <li>Contrataciones</li>
+                <li>Bandas y personas detenidas</li>
+                <li>Asaltos y juicios</li>
+                <li>Cuentas de usuario</li>
+            </ul>
+        </section>
+
+        <!-- Opciones del investigador -->
+        <section th:if="${esInvestigador}">
+            <h3>Consultas del investigador</h3>
+            <p>Desde aquí podrás consultar los registros del sistema.</p>
+
+            <ul>
+                <li>Entidades bancarias y sucursales</li>
+                <li>Vigilantes y contrataciones</li>
+                <li>Bandas y personas detenidas</li>
+                <li>Jueces, asaltos y juicios</li>
+            </ul>
+        </section>
+
+        <!-- Opciones del vigilante -->
+        <section th:if="${esVigilante}">
+            <h3>Mi espacio</h3>
+            <p>Desde aquí podrás consultar tus datos y contrataciones.</p>
+
+            <ul>
+                <li>Mi perfil</li>
+                <li>Mis contrataciones</li>
+            </ul>
+        </section>
+    </main>
+
+</body>
+</html>

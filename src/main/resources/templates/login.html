@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingresar | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+    <main>
+        <h1>Policía de la Ciudad</h1>
+        <h2>Iniciar sesión</h2>
+
+        <!-- Informa si Spring Security rechazó las credenciales -->
+        <p th:if="${param.error}" role="alert">
+            Usuario o contraseña incorrectos.
+        </p>
+
+        <!-- Confirma que se cerró la sesión -->
+        <p th:if="${param.logout}">
+            Cerraste la sesión correctamente.
+        </p>
+
+        <!-- Thymeleaf incorpora el token CSRF al formulario -->
+        <form th:action="@{/login}" method="post">
+
+            <div>
+                <label for="username">Usuario</label>
+                <input type="text"
+                       id="username"
+                       name="username"
+                       autocomplete="username"
+                       required>
+            </div>
+
+            <div>
+                <label for="password">Contraseña</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       autocomplete="current-password"
+                       required>
+            </div>
+
+            <button type="submit">Ingresar</button>
+        </form>
+    </main>
+
+</body>
+</html>

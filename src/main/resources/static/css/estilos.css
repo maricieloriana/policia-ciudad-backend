@@ -1,0 +1,146 @@
+
+/* Colores y tipografía comunes */
+:root {
+    font-family: Arial, sans-serif;
+    color: #203047;
+    background-color: #f0f4f8;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 32px 20px;
+    line-height: 1.5;
+}
+
+header,
+main {
+    max-width: 1000px;
+    margin: 0 auto 24px;
+    padding: 28px;
+    background-color: white;
+    border: 1px solid #d9e2ec;
+    border-radius: 12px;
+}
+
+h1,
+h2,
+h3 {
+    margin-top: 0;
+    color: #17365b;
+}
+
+a {
+    color: #145da0;
+    text-underline-offset: 3px;
+}
+
+a:hover {
+    color: #0a3b6b;
+}
+
+/* Formularios */
+form div {
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+input {
+    display: block;
+    width: 100%;
+    max-width: 460px;
+    padding: 12px;
+    border: 1px solid #8294a8;
+    border-radius: 6px;
+    font: inherit;
+}
+
+button {
+    padding: 11px 20px;
+    border: 0;
+    border-radius: 6px;
+    background-color: #173f6b;
+    color: white;
+    font: inherit;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #102d4d;
+}
+
+form > a {
+    display: inline-block;
+    margin-left: 16px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+    outline: 3px solid #c06b00;
+    outline-offset: 3px;
+}
+
+/* Mensajes */
+[role="alert"] {
+    padding: 12px;
+    background-color: #fff0f0;
+    color: #9b1c1c;
+    border-left: 4px solid #b42318;
+}
+
+[role="status"] {
+    padding: 12px;
+    background-color: #edf8f0;
+    color: #216337;
+    border-left: 4px solid #2e7d42;
+}
+
+/* Tablas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+caption {
+    text-align: left;
+    margin-bottom: 12px;
+}
+
+th,
+td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #d9e2ec;
+    overflow-wrap: anywhere;
+}
+
+thead {
+    background-color: #eaf0f7;
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 600px) {
+    body {
+        padding: 16px 10px;
+    }
+
+    header,
+    main {
+        padding: 18px;
+    }
+
+    th,
+    td {
+        padding: 8px;
+    }
+}
