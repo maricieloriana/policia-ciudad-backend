@@ -22,4 +22,6 @@ public interface ContratacionService {
     ContratacionDTO actualizarFecha(int id, LocalDate fecha);
     // Define la eliminación de una contratación existente
     void eliminar(int id);
+    // Actualiza la fecha y la condición de arma en una misma operación
+    ContratacionDTO actualizarDatos(int id, LocalDate fecha, Boolean conArma);
 }

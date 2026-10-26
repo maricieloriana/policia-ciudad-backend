@@ -267,4 +267,52 @@ public class ContratacionServiceImpl implements ContratacionService { //cumple e
 
         repositorio.delete(contratacion);
     }
+    @Override
+    @Transactional
+    public ContratacionDTO actualizarDatos(
+            int id, LocalDate fecha, Boolean conArma) {
+
+        if (id <= 0) {
+            throw new DatosInvalidosException(
+                    "El identificador de la contratacion debe ser positivo.");
+        }
+
+        if (fecha == null) {
+            throw new DatosInvalidosException(
+                    "La fecha de la contratacion es obligatoria.");
+        }
+
+        if (conArma == null) {
+            throw new DatosInvalidosException(
+                    "La condicion de arma es obligatoria.");
+        }
+
+        Contratacion contratacion = repositorio.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "No existe una contratacion con el identificador "
+                        + id + "."));
+
+        // Comprueba los duplicados antes de modificar los datos
+        if (!fecha.equals(contratacion.getFecha())
+                && repositorio.existsByCodigoSucursalAndIdVigilanteAndFecha(
+                        contratacion.getCodigoSucursal(),
+                        contratacion.getIdVigilante(),
+                        fecha)) {
+
+            throw new RegistroDuplicadoException(
+                    "Ya existe una contratacion para esa sucursal, vigilante y fecha.");
+        }
+
+        contratacion.cambiarFecha(fecha);
+        contratacion.cambiarCondicionArma(conArma);
+
+        Contratacion actualizada = repositorio.save(contratacion);
+
+        return new ContratacionDTO(
+                actualizada.getId(),
+                actualizada.getCodigoSucursal(),
+                actualizada.getIdVigilante(),
+                actualizada.getFecha(),
+                actualizada.isConArma());
+    }
 }

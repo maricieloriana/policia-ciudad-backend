@@ -150,4 +150,49 @@ public class ContratacionWebController {
         // Vuelve a la lista después de procesar la solicitud
         return "redirect:/contrataciones";
     }
+    
+        @GetMapping("/contrataciones/{id}/editar")
+    public String mostrarEdicion(@PathVariable int id, Model modelo) {
+
+        // Carga los datos actuales para mostrarlos en el formulario
+        modelo.addAttribute("contratacion", servicio.consultarPorId(id));
+
+        return "contratacion-edicion";
+    }
+
+    @PostMapping("/contrataciones/{id}/editar")
+    public String actualizar(
+            @PathVariable int id,
+            @ModelAttribute("contratacion") ContratacionDTO datos,
+            BindingResult resultado,
+            Model modelo,
+            RedirectAttributes mensajes) {
+
+        // Conserva el identificador de la dirección al volver al formulario
+        datos.setId(id);
+
+        if (resultado.hasErrors()) {
+            modelo.addAttribute(
+                    "mensajeError", "Revisá la fecha ingresada.");
+            return "contratacion-edicion";
+        }
+
+        try {
+            servicio.actualizarDatos(
+                    id, datos.getFecha(), datos.isConArma());
+
+            mensajes.addFlashAttribute(
+                    "mensajeExito",
+                    "Contratación actualizada correctamente.");
+
+            return "redirect:/contrataciones";
+
+        } catch (DatosInvalidosException
+                | RecursoNoEncontradoException
+                | RegistroDuplicadoException excepcion) {
+
+            modelo.addAttribute("mensajeError", excepcion.getMessage());
+            return "contratacion-edicion";
+        }
+    }
 }

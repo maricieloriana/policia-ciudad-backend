@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar contratación | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <header>
+        <h1>Editar contratación</h1>
+        <a th:href="@{/contrataciones}">Volver a la lista</a>
+    </header>
+
+    <main>
+        <h2>Modificar los datos</h2>
+
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
+
+        <form
+            th:action="@{/contrataciones/{id}/editar(id=${contratacion.id})}"
+            th:object="${contratacion}"
+            method="post">
+
+            <div>
+                <label for="fecha">Fecha</label>
+                <input type="date"
+                       id="fecha"
+                       th:field="*{fecha}"
+                       required>
+            </div>
+
+            <div>
+                <label for="conArma">
+                    <input type="checkbox"
+                           id="conArma"
+                           th:field="*{conArma}">
+                    Servicio con arma
+                </label>
+            </div>
+
+            <button type="submit">Guardar cambios</button>
+        </form>
+    </main>
+</body>
+</html>

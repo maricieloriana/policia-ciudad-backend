@@ -60,6 +60,10 @@
                     <td th:text="${contratacion.fecha}">2026-10-13</td>
                     <td th:text="${contratacion.conArma ? 'Sí' : 'No'}">Sí</td>
                     <td th:if="${esAdministrador}">
+                        <a th:href="@{/contrataciones/{id}/editar(id=${contratacion.id})}">
+                            Editar
+                        </a>
+
                         <form
                             th:action="@{/contrataciones/{id}/eliminar(id=${contratacion.id})}"
                             method="post"
