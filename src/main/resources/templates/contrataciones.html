@@ -9,12 +9,12 @@
 <body>
 
     <header>
-        <h1>Contrataciones</h1>
+        <h1 th:text="${titulo}">Contrataciones</h1>
         <a th:href="@{/inicio}">Volver al inicio</a>
     </header>
 
     <main>
-        <h2>Contrataciones registradas</h2>
+        <h2 th:text="${titulo}">Contrataciones registradas</h2>
         <!-- Solo el administrador ve la opción de registrar -->
         <p th:if="${esAdministrador}">
         <a th:href="@{/contrataciones/nueva}">Registrar contratación</a>

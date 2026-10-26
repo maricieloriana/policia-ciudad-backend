@@ -44,6 +44,9 @@ public class ContratacionWebController {
                         .equals("ROLE_ADMINISTRADOR"));
 
         modelo.addAttribute("esAdministrador", esAdministrador);
+        
+        // Título de la consulta general
+        modelo.addAttribute("titulo", "Contrataciones registradas");
 
         return "contrataciones";
     }
@@ -101,5 +104,25 @@ public class ContratacionWebController {
         // Carga las listas para seleccionar registros existentes
         modelo.addAttribute("sucursales", sucursalService.listar());
         modelo.addAttribute("vigilantes", vigilanteService.listar());
+    }
+    
+    @GetMapping("/mis-contrataciones")
+    public String listarPropias(
+            Model modelo,
+            Authentication autenticacion) {
+
+        // Obtiene las contrataciones del titular de la cuenta autenticada
+        modelo.addAttribute(
+                "contrataciones",
+                servicio.listarPropias(autenticacion.getName()));
+
+        // La consulta propia no muestra opciones de administración
+        modelo.addAttribute("esAdministrador", false);
+        
+        // Título de la consulta del vigilante autenticado
+        modelo.addAttribute("titulo", "Mis contrataciones");
+
+        // Reutiliza la tabla de contrataciones
+        return "contrataciones";
     }
 }
