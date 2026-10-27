@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar banda | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <header>
+        <h1>Editar banda</h1>
+        <a th:href="@{/bandas}">Volver a la lista</a>
+    </header>
+
+    <main>
+        <h2 th:text="${'Banda ' + numeroBanda}">Datos de la banda</h2>
+
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
+
+        <form
+            th:action="@{/bandas/{numero}/editar(numero=${numeroBanda})}"
+            th:object="${banda}"
+            method="post">
+
+            <div>
+                <label for="cantidadMiembros">Cantidad de miembros</label>
+                <input type="number"
+                       id="cantidadMiembros"
+                       th:field="*{cantidadMiembros}"
+                       min="0"
+                       required>
+            </div>
+
+            <button type="submit">Guardar cambios</button>
+        </form>
+    </main>
+</body>
+</html>

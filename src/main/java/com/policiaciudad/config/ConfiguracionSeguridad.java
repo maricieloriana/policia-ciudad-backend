@@ -300,6 +300,28 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.POST, "/entidades-bancarias")
                         .hasRole("ADMINISTRADOR")
                         
+                        // Administradores e investigadores pueden consultar bandas
+                        .requestMatchers(HttpMethod.GET, "/bandas")
+                        .hasAnyRole("ADMINISTRADOR", "INVESTIGADOR")
+                        
+                        // Solo el administrador puede abrir y guardar el registro de bandas
+                        .requestMatchers(HttpMethod.GET, "/bandas/nueva")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.POST, "/bandas")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        // Solo el administrador puede abrir y guardar la edición de bandas
+                        .requestMatchers(HttpMethod.GET, "/bandas/{numero}/editar")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.POST, "/bandas/{numero}/editar")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        // Solo el administrador puede eliminar bandas desde la web
+                        .requestMatchers(HttpMethod.POST, "/bandas/{numero}/eliminar")
+                        .hasRole("ADMINISTRADOR")
+                        
                         // Las demás rutas quedan bloqueadas por ahora
                         .anyRequest().denyAll() //bloquea las rutas que aún no habilitamos
                 )
