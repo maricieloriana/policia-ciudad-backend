@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar entidad bancaria | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <header>
+        <h1>Registrar entidad bancaria</h1>
+        <a th:href="@{/entidades-bancarias}">Volver a la lista</a>
+    </header>
+
+    <main>
+        <h2>Datos de la entidad y sus sucursales</h2>
+
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
+
+        <form th:action="@{/entidades-bancarias}"
+              th:object="${entidad}"
+              method="post">
+
+            <div>
+                <label for="codigo">Código de entidad bancaria</label>
+                <input type="number"
+                       id="codigo"
+                       th:field="*{codigo}"
+                       min="1"
+                       required>
+            </div>
+
+            <div>
+                <label for="domicilioCentral">Domicilio central</label>
+                <input type="text"
+                       id="domicilioCentral"
+                       th:field="*{domicilioCentral}"
+                       maxlength="255"
+                       required>
+            </div>
+
+            <p>
+                La entidad debe comenzar con al menos dos sucursales.
+                Ingresá un código distinto para cada una.
+            </p>
+
+            <fieldset th:each="sucursal, estado : *{sucursales}">
+                <legend th:text="${'Sucursal ' + (estado.index + 1)}">
+                    Sucursal
+                </legend>
+
+                <div>
+                    <label th:for="${'codigoSucursal' + estado.index}">
+                        Código de sucursal
+                    </label>
+                    <input type="number"
+                           th:id="${'codigoSucursal' + estado.index}"
+                           th:field="*{sucursales[__${estado.index}__].codigo}"
+                           min="1"
+                           required>
+                </div>
+
+                <div>
+                    <label th:for="${'domicilioSucursal' + estado.index}">
+                        Domicilio
+                    </label>
+                    <input type="text"
+                           th:id="${'domicilioSucursal' + estado.index}"
+                           th:field="*{sucursales[__${estado.index}__].domicilio}"
+                           maxlength="255"
+                           required>
+                </div>
+
+                <div>
+                    <label th:for="${'empleadosSucursal' + estado.index}">
+                        Cantidad de empleados
+                    </label>
+                    <input type="number"
+                           th:id="${'empleadosSucursal' + estado.index}"
+                           th:field="*{sucursales[__${estado.index}__].cantidadEmpleados}"
+                           min="0"
+                           required>
+                </div>
+            </fieldset>
+
+            <button type="submit">Guardar entidad y sucursales</button>
+        </form>
+    </main>
+</body>
+</html>

@@ -281,6 +281,25 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.POST, "/sucursales/{codigo}/eliminar")
                         .hasRole("ADMINISTRADOR")
                         
+                        // Administradores e investigadores pueden consultar entidades bancarias
+                        .requestMatchers(HttpMethod.GET, "/entidades-bancarias")
+                        .hasAnyRole("ADMINISTRADOR", "INVESTIGADOR")
+                        
+                        // Solo el administrador puede editar entidades bancarias
+                        .requestMatchers(HttpMethod.GET, "/entidades-bancarias/{codigo}/editar")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.POST, "/entidades-bancarias/{codigo}/editar")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        // Solo el administrador puede abrir el registro de entidades
+                        .requestMatchers(HttpMethod.GET, "/entidades-bancarias/nueva")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        // Solo el administrador puede registrar entidades bancarias
+                        .requestMatchers(HttpMethod.POST, "/entidades-bancarias")
+                        .hasRole("ADMINISTRADOR")
+                        
                         // Las demás rutas quedan bloqueadas por ahora
                         .anyRequest().denyAll() //bloquea las rutas que aún no habilitamos
                 )

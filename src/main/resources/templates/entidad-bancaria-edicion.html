@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar entidad bancaria | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <header>
+        <h1>Editar entidad bancaria</h1>
+        <a th:href="@{/entidades-bancarias}">Volver a la lista</a>
+    </header>
+
+    <main>
+        <h2 th:text="${'Entidad bancaria ' + codigoEntidad}">
+            Datos de la entidad
+        </h2>
+
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
+
+        <form
+            th:action="@{/entidades-bancarias/{codigo}/editar(codigo=${codigoEntidad})}"
+            th:object="${entidad}"
+            method="post">
+
+            <div>
+                <label for="domicilioCentral">Domicilio central</label>
+                <input type="text"
+                       id="domicilioCentral"
+                       th:field="*{domicilioCentral}"
+                       maxlength="255"
+                       required>
+            </div>
+
+            <button type="submit">Guardar cambios</button>
+        </form>
+    </main>
+</body>
+</html>

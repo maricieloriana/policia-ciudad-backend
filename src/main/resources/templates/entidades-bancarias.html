@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entidades bancarias | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <header>
+        <h1>Entidades bancarias</h1>
+        <a th:href="@{/inicio}">Volver al inicio</a>
+    </header>
+
+    <main>
+        <h2>Entidades bancarias registradas</h2>
+        <p th:if="${esAdministrador}">
+            <a th:href="@{/entidades-bancarias/nueva}">
+                Registrar entidad bancaria
+            </a>
+        </p>
+        <p th:if="${mensajeExito}"
+           th:text="${mensajeExito}"
+           role="status">
+        </p>
+
+        <p th:if="${#lists.isEmpty(entidades)}">
+            No hay entidades bancarias registradas.
+        </p>
+
+        <table th:unless="${#lists.isEmpty(entidades)}">
+            <caption>Datos de las entidades bancarias registradas</caption>
+
+            <thead>
+                <tr>
+                    <th scope="col">Código</th>
+                    <th scope="col">Domicilio central</th>
+                    <th scope="col">Cantidad de sucursales</th>
+                    <th scope="col" th:if="${esAdministrador}">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="entidad : ${entidades}">
+                    <td th:text="${entidad.codigo}">1001</td>
+                    <td th:text="${entidad.domicilioCentral}">
+                        Domicilio central
+                    </td>
+                    <td th:text="${#lists.size(entidad.sucursales)}">2</td>
+                    <td th:text="${#lists.size(entidad.sucursales)}">2</td>
+
+                    <td th:if="${esAdministrador}">
+                        <a th:href="@{/entidades-bancarias/{codigo}/editar(codigo=${entidad.codigo})}">
+                            Editar
+                        </a>
+                    </td>
+                </tr>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>
