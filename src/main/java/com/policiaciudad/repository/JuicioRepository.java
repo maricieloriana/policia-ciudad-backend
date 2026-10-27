@@ -10,4 +10,5 @@ public interface JuicioRepository extends JpaRepository<Juicio, Integer> {
     boolean existsByIdAsalto(int idAsalto);
     // Comprueba si existen juicios asociados al juez
     boolean existsByIdJuez(int idJuez);
+    boolean existsByIdPersonaDetenida(int idPersonaDetenida);
 }

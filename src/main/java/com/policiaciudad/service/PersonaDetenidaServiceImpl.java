@@ -9,6 +9,10 @@ import com.policiaciudad.repository.PersonaDetenidaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import com.policiaciudad.exception.RecursoEnUsoException;
+import com.policiaciudad.repository.AsaltoRepository;
+import com.policiaciudad.repository.JuicioRepository;
+import com.policiaciudad.repository.UsuarioRepository;
 
 @Service // Spring registra el servicio
 public class PersonaDetenidaServiceImpl
@@ -16,13 +20,22 @@ public class PersonaDetenidaServiceImpl
 
     private final PersonaDetenidaRepository repositorio;
     private final BandaRepository bandaRepository;
+    private final AsaltoRepository asaltoRepository;
+    private final JuicioRepository juicioRepository;
+    private final UsuarioRepository usuarioRepository;
 
     public PersonaDetenidaServiceImpl(
             PersonaDetenidaRepository repositorio,
-            BandaRepository bandaRepository) {
+            BandaRepository bandaRepository,
+            AsaltoRepository asaltoRepository,
+            JuicioRepository juicioRepository,
+            UsuarioRepository usuarioRepository) {
 
         this.repositorio = repositorio;
         this.bandaRepository = bandaRepository;
+        this.asaltoRepository = asaltoRepository;
+        this.juicioRepository = juicioRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
@@ -169,5 +182,33 @@ public class PersonaDetenidaServiceImpl
                 actualizada.getId(),
                 actualizada.getNombreCompleto(),
                 actualizada.getNumeroBanda());
+    }
+    @Override
+    @Transactional
+    public void eliminar(int id) {
+
+        if (id <= 0) {
+            throw new DatosInvalidosException(
+                    "El identificador de la persona debe ser positivo.");
+        }
+
+        PersonaDetenida persona = repositorio.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "No existe una persona detenida con el identificador "
+                        + id + "."));
+
+        if (asaltoRepository.existsByIdPersonaDetenida(id)
+                || juicioRepository.existsByIdPersonaDetenida(id)) {
+
+            throw new RecursoEnUsoException(
+                    "No se puede eliminar la persona porque tiene asaltos o juicios asociados.");
+        }
+
+        if (usuarioRepository.existsByIdPersona(id)) {
+            throw new RecursoEnUsoException(
+                    "No se puede eliminar la persona porque tiene una cuenta vinculada.");
+        }
+
+        repositorio.delete(persona);
     }
 }

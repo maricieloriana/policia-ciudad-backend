@@ -18,4 +18,5 @@ public interface PersonaDetenidaService {
     PersonaDetenidaDTO actualizarBanda(int id, Integer numeroBanda);
     // Define la corrección del nombre completo de una persona detenida
     PersonaDetenidaDTO actualizarNombre(int id, String nombreCompleto);
+    void eliminar(int identificador);
 }

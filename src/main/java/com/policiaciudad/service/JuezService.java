@@ -21,4 +21,5 @@ public interface JuezService {
     JuezDTO actualizarNombre(int id, String nombreCompleto);
     // Define la eliminación de un juez sin registros que lo referencien
     void eliminar(int id);
+    JuezDTO actualizarDatos(int id, String nombreCompleto, Integer aniosServicio);
 }    //Devuelve un JuezDTO con los datos registrados

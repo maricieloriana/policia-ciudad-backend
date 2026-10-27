@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface AsaltoRepository extends JpaRepository<Asalto, Integer> {
     // Comprueba si la sucursal tiene asaltos registrados
     boolean existsByCodigoSucursal(int codigoSucursal);
+    boolean existsByIdPersonaDetenida(int idPersonaDetenida);
 }// save, findById y existsById se heredan de JpaRepository

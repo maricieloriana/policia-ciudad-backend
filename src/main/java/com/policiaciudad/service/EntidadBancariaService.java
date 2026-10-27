@@ -14,4 +14,5 @@ public interface EntidadBancariaService {
     EntidadBancariaDTO consultarPorCodigo(int codigo);
     // Define la corrección del domicilio central de una entidad bancaria
     EntidadBancariaDTO actualizarDomicilioCentral(int codigo, String domicilioCentral);
+    void eliminar(int identificador);
 }

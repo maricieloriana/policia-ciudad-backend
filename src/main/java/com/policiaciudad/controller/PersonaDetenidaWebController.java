@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.policiaciudad.dto.PersonaDetenidaDTO;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.policiaciudad.dto.ActualizarNombreDTO;
+import com.policiaciudad.exception.RecursoEnUsoException;
 
 @Controller
 public class PersonaDetenidaWebController {
@@ -181,5 +182,28 @@ public class PersonaDetenidaWebController {
             modelo.addAttribute("mensajeError", excepcion.getMessage());
             return "persona-detenida-nombre";
         }
+    }
+   
+    @PostMapping("/personas-detenidas/{id}/eliminar")
+    public String eliminar(
+            @PathVariable int id,
+            RedirectAttributes mensajes) {
+
+        try {
+            servicio.eliminar(id);
+
+            mensajes.addFlashAttribute(
+                    "mensajeExito",
+                    "Persona detenida eliminada correctamente.");
+
+        } catch (DatosInvalidosException
+                | RecursoNoEncontradoException
+                | RecursoEnUsoException excepcion) {
+
+            mensajes.addFlashAttribute(
+                    "mensajeError", excepcion.getMessage());
+        }
+
+        return "redirect:/personas-detenidas";
     }
 }

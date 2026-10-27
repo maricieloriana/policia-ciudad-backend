@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar juicio | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <header>
+        <h1>Registrar juicio</h1>
+        <a th:href="@{/juicios}">Volver a la lista</a>
+    </header>
+
+    <main>
+        <h2>Resolución judicial</h2>
+
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
+
+        <p th:if="${#lists.isEmpty(asaltos)
+            or #lists.isEmpty(jueces)}">
+            Para registrar un juicio debe existir
+            al menos un asalto y un juez.
+        </p>
+
+        <form th:unless="${#lists.isEmpty(asaltos)
+                  or #lists.isEmpty(jueces)}"
+              th:action="@{/juicios}"
+              th:object="${juicio}"
+              method="post">
+
+            <div>
+                <label for="idAsalto">Asalto</label>
+                <select id="idAsalto" th:field="*{idAsalto}" required>
+                    <option value="">Seleccioná un asalto</option>
+                    <option th:each="asalto : ${asaltos}"
+                            th:value="${asalto.id}"
+                            th:text="${'Asalto ' + asalto.id
+                                + ' — Persona ' + asalto.idPersonaDetenida
+                                + ' — ' + asalto.fecha}">
+                    </option>
+                </select>
+            </div>
+
+            <p>
+                El juicio corresponde a la persona detenida
+                asociada al asalto seleccionado.
+            </p>
+
+            <div>
+                <label for="idJuez">Juez</label>
+                <select id="idJuez" th:field="*{idJuez}" required>
+                    <option value="">Seleccioná un juez</option>
+                    <option th:each="juez : ${jueces}"
+                            th:value="${juez.id}"
+                            th:text="${juez.nombreCompleto
+                                + ' (ID ' + juez.id + ')'}">
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label for="condenado">Resolución</label>
+                <select id="condenado"
+                        th:field="*{condenado}"
+                        required>
+                    <option value="">Seleccioná una resolución</option>
+                    <option value="true">Condena</option>
+                    <option value="false">Absolución</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="aniosCarcel">Años de cárcel</label>
+                <input type="number"
+                       id="aniosCarcel"
+                       th:field="*{aniosCarcel}"
+                       min="0"
+                       aria-describedby="ayudaAnios"
+                       required>
+
+                <p id="ayudaAnios">
+                    Para una absolución ingresá 0.
+                    Para una condena ingresá una cantidad mayor que 0.
+                </p>
+            </div>
+
+            <button type="submit">Guardar juicio</button>
+        </form>
+    </main>
+</body>
+</html>
+

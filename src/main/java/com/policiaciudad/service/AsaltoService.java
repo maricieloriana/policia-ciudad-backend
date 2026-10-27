@@ -19,4 +19,5 @@ public interface AsaltoService {
     AsaltoDTO consultarPorId(int id);
     // Define la corrección de la fecha de un asalto
     AsaltoDTO actualizarFecha(int id, LocalDate fecha);
+    void eliminar(int id);
 }

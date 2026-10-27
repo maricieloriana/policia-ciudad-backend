@@ -49,10 +49,7 @@
             <tbody>
                 <tr th:each="persona : ${personasDetenidas}">
                     <td th:text="${persona.id}">1</td>
-
-                    <td th:text="${persona.nombreCompleto}">
-                        Nombre
-                    </td>
+                    <td th:text="${persona.nombreCompleto}">Nombre</td>
 
                     <td th:text="${persona.numeroBanda != null
                         ? persona.numeroBanda : 'Sin banda'}">
@@ -68,6 +65,13 @@
                             <a th:href="@{/personas-detenidas/{id}/banda(id=${persona.id})}">
                                 Cambiar banda
                             </a>
+
+                            <form
+                                th:action="@{/personas-detenidas/{id}/eliminar(id=${persona.id})}"
+                                method="post"
+                                onsubmit="return confirm('¿Querés eliminar esta persona detenida?');">
+                                <button type="submit">Eliminar</button>
+                            </form>
                         </div>
                     </td>
                 </tr>

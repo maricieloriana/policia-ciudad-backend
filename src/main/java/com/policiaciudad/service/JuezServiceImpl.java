@@ -197,4 +197,42 @@ public class JuezServiceImpl implements JuezService {
 
         repositorio.delete(juez);
     }
+    
+    @Override
+    @Transactional
+    public JuezDTO actualizarDatos(
+            int id, String nombreCompleto, Integer aniosServicio) {
+
+        if (id <= 0) {
+            throw new DatosInvalidosException(
+                    "El identificador del juez debe ser positivo.");
+        }
+
+        if (aniosServicio == null) {
+            throw new DatosInvalidosException(
+                    "Los anios de servicio son obligatorios.");
+        }
+
+        if (nombreCompleto != null
+                && nombreCompleto.trim().length() > 255) {
+            throw new DatosInvalidosException(
+                    "El nombre completo no debe superar 255 caracteres.");
+        }
+
+        Juez juez = repositorio.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "No existe un juez con el identificador " + id + "."));
+
+        // El modelo valida el nombre y los años de servicio
+        juez.cambiarNombre(nombreCompleto);
+        juez.actualizarAniosServicio(aniosServicio);
+
+        Juez actualizado = repositorio.save(juez);
+
+        return new JuezDTO(
+                actualizado.getId(),
+                actualizado.getNombreCompleto(),
+                actualizado.getClaveInterna(),
+                actualizado.getAniosServicio());
+    }
 }

@@ -18,6 +18,7 @@ import com.policiaciudad.dto.RegistroSucursalDTO;
 import java.util.ArrayList;
 import com.policiaciudad.exception.RegistroDuplicadoException;
 import org.springframework.validation.BindingResult;
+import com.policiaciudad.exception.RecursoEnUsoException;
 
 @Controller
 public class EntidadBancariaWebController {
@@ -139,5 +140,28 @@ public class EntidadBancariaWebController {
 
             return "entidad-bancaria-formulario";
         }
+    }
+    
+    @PostMapping("/entidades-bancarias/{codigo}/eliminar")
+    public String eliminar(
+            @PathVariable int codigo,
+            RedirectAttributes mensajes) {
+
+        try {
+            servicio.eliminar(codigo);
+
+            mensajes.addFlashAttribute(
+                    "mensajeExito",
+                    "Entidad bancaria y sus sucursales eliminadas correctamente.");
+
+        } catch (DatosInvalidosException
+                | RecursoNoEncontradoException
+                | RecursoEnUsoException excepcion) {
+
+            mensajes.addFlashAttribute(
+                    "mensajeError", excepcion.getMessage());
+        }
+
+        return "redirect:/entidades-bancarias";
     }
 }

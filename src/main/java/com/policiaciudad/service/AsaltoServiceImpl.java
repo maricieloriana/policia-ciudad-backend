@@ -11,6 +11,8 @@ import java.util.List;
 import com.policiaciudad.exception.DatosInvalidosException;
 import com.policiaciudad.exception.RecursoNoEncontradoException;
 import com.policiaciudad.modelo.Asalto;
+import com.policiaciudad.repository.JuicioRepository;
+import com.policiaciudad.exception.RecursoEnUsoException;
 
 @Service // Spring registra el servicio
 public class AsaltoServiceImpl implements AsaltoService {
@@ -18,15 +20,18 @@ public class AsaltoServiceImpl implements AsaltoService {
     private final AsaltoRepository repositorio;
     private final SucursalRepository sucursalRepository;
     private final PersonaDetenidaRepository personaDetenidaRepository;
+    private final JuicioRepository juicioRepository;
 
     public AsaltoServiceImpl(
             AsaltoRepository repositorio,
             SucursalRepository sucursalRepository,
-            PersonaDetenidaRepository personaDetenidaRepository) {
+            PersonaDetenidaRepository personaDetenidaRepository,
+            JuicioRepository juicioRepository) {
 
         this.repositorio = repositorio;
         this.sucursalRepository = sucursalRepository;
         this.personaDetenidaRepository = personaDetenidaRepository;
+        this.juicioRepository = juicioRepository;
     }
 
     @Override
@@ -133,5 +138,26 @@ public class AsaltoServiceImpl implements AsaltoService {
                 actualizado.getCodigoSucursal(),
                 actualizado.getIdPersonaDetenida(),
                 actualizado.getFecha());
+    }
+
+    @Override
+    @Transactional
+    public void eliminar(int id) {
+
+        if (id <= 0) {
+            throw new DatosInvalidosException(
+                    "El identificador del asalto debe ser positivo.");
+        }
+
+        Asalto asalto = repositorio.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "No existe un asalto con el identificador " + id + "."));
+
+        if (juicioRepository.existsByIdAsalto(id)) {
+            throw new RecursoEnUsoException(
+                    "No se puede eliminar el asalto porque tiene un juicio asociado.");
+        }
+
+        repositorio.delete(asalto);
     }
 }

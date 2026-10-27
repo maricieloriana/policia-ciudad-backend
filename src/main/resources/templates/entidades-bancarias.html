@@ -24,6 +24,11 @@
            role="status">
         </p>
 
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
+
         <p th:if="${#lists.isEmpty(entidades)}">
             No hay entidades bancarias registradas.
         </p>
@@ -43,18 +48,23 @@
             <tbody>
                 <tr th:each="entidad : ${entidades}">
                     <td th:text="${entidad.codigo}">1001</td>
-                    <td th:text="${entidad.domicilioCentral}">
-                        Domicilio central
-                    </td>
-                    <td th:text="${#lists.size(entidad.sucursales)}">2</td>
+                    <td th:text="${entidad.domicilioCentral}">Domicilio</td>
                     <td th:text="${#lists.size(entidad.sucursales)}">2</td>
 
                     <td th:if="${esAdministrador}">
-                        <a th:href="@{/entidades-bancarias/{codigo}/editar(codigo=${entidad.codigo})}">
-                            Editar
-                        </a>
+                        <div class="acciones">
+                            <a th:href="@{/entidades-bancarias/{codigo}/editar(codigo=${entidad.codigo})}">
+                                Editar
+                            </a>
+
+                            <form
+                                th:action="@{/entidades-bancarias/{codigo}/eliminar(codigo=${entidad.codigo})}"
+                                method="post"
+                                onsubmit="return confirm('¿Querés eliminar esta entidad bancaria y todas sus sucursales?');">
+                                <button type="submit">Eliminar entidad y sucursales</button>
+                            </form>
+                        </div>
                     </td>
-                </tr>
                 </tr>
             </tbody>
         </table>

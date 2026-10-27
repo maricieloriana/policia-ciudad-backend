@@ -344,6 +344,66 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.POST, "/personas-detenidas/{id}/nombre")
                         .hasRole("ADMINISTRADOR")
                         
+                        .requestMatchers(HttpMethod.GET, "/asaltos")
+                        .hasAnyRole("ADMINISTRADOR", "INVESTIGADOR")
+                        
+                        .requestMatchers(HttpMethod.GET, "/asaltos/nuevo")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.POST, "/asaltos")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        .requestMatchers(HttpMethod.GET, "/asaltos/{id}/editar")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.POST, "/asaltos/{id}/editar")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        .requestMatchers(HttpMethod.GET, "/juicios")
+                        .hasAnyRole("ADMINISTRADOR", "INVESTIGADOR")
+                        
+                        .requestMatchers(HttpMethod.GET, "/juicios/nuevo")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.POST, "/juicios")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        .requestMatchers(HttpMethod.GET, "/juicios/{id}/editar")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.POST, "/juicios/{id}/editar")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        .requestMatchers(HttpMethod.GET, "/jueces")
+                        .hasAnyRole("ADMINISTRADOR", "INVESTIGADOR")
+                        
+                        .requestMatchers(HttpMethod.GET, "/jueces/nuevo")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.POST, "/jueces")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.POST, "/jueces/{id}/eliminar")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        .requestMatchers(HttpMethod.GET, "/jueces/{id}/editar")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.POST, "/jueces/{id}/editar")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        .requestMatchers(HttpMethod.GET, "/usuarios/nuevo")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.POST, "/usuarios")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        .requestMatchers(HttpMethod.POST, "/juicios/{id}/eliminar", "/asaltos/{id}/eliminar")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        .requestMatchers(HttpMethod.POST, "/personas-detenidas/{id}/eliminar", "/entidades-bancarias/{codigo}/eliminar")
+                        .hasRole("ADMINISTRADOR")
+
                         // Las demás rutas quedan bloqueadas por ahora
                         .anyRequest().denyAll() //bloquea las rutas que aún no habilitamos
                 )

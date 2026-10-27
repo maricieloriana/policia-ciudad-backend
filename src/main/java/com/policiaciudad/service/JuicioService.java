@@ -19,4 +19,5 @@ public interface JuicioService {
     JuicioDTO consultarPorId(int id);
     // Define la actualización de la resolución de un juicio
     JuicioDTO actualizarResolucion(int id, Boolean condenado, Integer aniosCarcel);
+    void eliminar(int id);
 }

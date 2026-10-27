@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar asalto | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <header>
+        <h1>Registrar asalto</h1>
+        <a th:href="@{/asaltos}">Volver a la lista</a>
+    </header>
+
+    <main>
+        <h2>Datos del asalto</h2>
+
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
+
+        <p th:if="${#lists.isEmpty(sucursales)
+            or #lists.isEmpty(personas)}">
+            Para registrar un asalto debe existir al menos
+            una sucursal y una persona detenida.
+        </p>
+
+        <form th:unless="${#lists.isEmpty(sucursales)
+                  or #lists.isEmpty(personas)}"
+              th:action="@{/asaltos}"
+              th:object="${asalto}"
+              method="post">
+
+            <div>
+                <label for="codigoSucursal">Sucursal</label>
+                <select id="codigoSucursal"
+                        th:field="*{codigoSucursal}"
+                        required>
+                    <option value="">Seleccioná una sucursal</option>
+                    <option th:each="sucursal : ${sucursales}"
+                            th:value="${sucursal.codigo}"
+                            th:text="${sucursal.codigo + ' — ' + sucursal.domicilio}">
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label for="idPersonaDetenida">Persona detenida</label>
+                <select id="idPersonaDetenida"
+                        th:field="*{idPersonaDetenida}"
+                        required>
+                    <option value="">Seleccioná una persona</option>
+                    <option th:each="persona : ${personas}"
+                            th:value="${persona.id}"
+                            th:text="${persona.nombreCompleto + ' (ID ' + persona.id + ')'}">
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label for="fecha">Fecha</label>
+                <input type="date"
+                       id="fecha"
+                       th:field="*{fecha}"
+                       required>
+            </div>
+
+            <button type="submit">Guardar asalto</button>
+        </form>
+    </main>
+</body>
+</html>

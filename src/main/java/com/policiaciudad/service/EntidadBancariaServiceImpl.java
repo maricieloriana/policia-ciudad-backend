@@ -17,21 +17,29 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.policiaciudad.exception.RecursoNoEncontradoException;
+import com.policiaciudad.exception.RecursoEnUsoException;
+import com.policiaciudad.repository.AsaltoRepository;
+import com.policiaciudad.repository.ContratacionRepository;
 
 @Service
 public class EntidadBancariaServiceImpl implements EntidadBancariaService {
 
     private final EntidadBancariaRepository entidadRepository;
     private final SucursalRepository sucursalRepository;
+    private final AsaltoRepository asaltoRepository;
+    private final ContratacionRepository contratacionRepository;
 
     public EntidadBancariaServiceImpl(
             EntidadBancariaRepository entidadRepository,
-            SucursalRepository sucursalRepository) {
+            SucursalRepository sucursalRepository,
+            AsaltoRepository asaltoRepository,
+            ContratacionRepository contratacionRepository) {
 
         this.entidadRepository = entidadRepository;
         this.sucursalRepository = sucursalRepository;
+        this.asaltoRepository = asaltoRepository;
+        this.contratacionRepository = contratacionRepository;
     }
-
     @Override
     @Transactional
     public EntidadBancariaDTO registrar(RegistroEntidadBancariaDTO datos) {
@@ -217,5 +225,44 @@ public class EntidadBancariaServiceImpl implements EntidadBancariaService {
                 actualizada.getCodigo(),
                 actualizada.getDomicilioCentral(),
                 sucursales);
+    }
+
+    @Override
+    @Transactional
+    public void eliminar(int codigo) {
+
+        if (codigo <= 0) {
+            throw new DatosInvalidosException(
+                    "El codigo de la entidad debe ser positivo.");
+        }
+
+        EntidadBancaria entidad = entidadRepository.findById(codigo)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "No existe una entidad bancaria con el codigo "
+                        + codigo + "."));
+
+        List<Sucursal> sucursales
+                = sucursalRepository.findByCodigoEntidadBancaria(codigo);
+
+        // Comprueba todas las sucursales antes de eliminar cualquiera
+        for (Sucursal sucursal : sucursales) {
+            int codigoSucursal = sucursal.getCodigo();
+
+            if (asaltoRepository.existsByCodigoSucursal(codigoSucursal)
+                    || contratacionRepository.existsByCodigoSucursal(
+                            codigoSucursal)) {
+
+                throw new RecursoEnUsoException(
+                        "No se puede eliminar la entidad: la sucursal "
+                        + codigoSucursal
+                        + " tiene asaltos o contrataciones asociados.");
+            }
+        }
+
+        // Elimina primero las sucursales y después la entidad
+        sucursalRepository.deleteAll(sucursales);
+        sucursalRepository.flush();
+
+        entidadRepository.delete(entidad);
     }
 }

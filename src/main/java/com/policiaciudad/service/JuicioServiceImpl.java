@@ -191,4 +191,20 @@ public class JuicioServiceImpl implements JuicioService {
                 actualizado.isCondenado(),
                 actualizado.getAniosCarcel());
     }
+    
+    @Override
+    @Transactional
+    public void eliminar(int id) {
+
+        if (id <= 0) {
+            throw new DatosInvalidosException(
+                    "El identificador del juicio debe ser positivo.");
+        }
+
+        Juicio juicio = repositorio.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "No existe un juicio con el identificador " + id + "."));
+
+        repositorio.delete(juicio);
+    }
 }

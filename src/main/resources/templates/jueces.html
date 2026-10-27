@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jueces | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <header>
+        <h1>Jueces</h1>
+        <a th:href="@{/inicio}">Volver al inicio</a>
+    </header>
+
+    <main>
+        <h2>Jueces registrados</h2>
+        <p th:if="${esAdministrador}">
+            <a th:href="@{/jueces/nuevo}">Registrar juez</a>
+        </p>
+
+        <p th:if="${mensajeExito}"
+           th:text="${mensajeExito}"
+           role="status">
+        </p>
+
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
+
+        <p th:if="${#lists.isEmpty(jueces)}">
+            No hay jueces registrados.
+        </p>
+
+        <div style="overflow-x: auto;">
+            <table th:unless="${#lists.isEmpty(jueces)}">
+                <caption>Datos de los jueces registrados</caption>
+
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre completo</th>
+                        <th scope="col">Clave interna</th>
+                        <th scope="col">Años de servicio</th>
+                        <th scope="col" th:if="${esAdministrador}">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr th:each="juez : ${jueces}">
+                        <td th:text="${juez.id}">6</td>
+                        <td th:text="${juez.nombreCompleto}">Nombre</td>
+                        <td th:text="${juez.claveInterna}">5001</td>
+                        <td th:text="${juez.aniosServicio}">11</td>
+
+                        <td th:if="${esAdministrador}">
+                            <div class="acciones">
+                                <a th:href="@{/jueces/{id}/editar(id=${juez.id})}">
+                                    Editar
+                                </a>
+
+                                <form
+                                    th:action="@{/jueces/{id}/eliminar(id=${juez.id})}"
+                                    method="post"
+                                    onsubmit="return confirm('¿Querés eliminar este juez?');">
+
+                                    <button type="submit">Eliminar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>
