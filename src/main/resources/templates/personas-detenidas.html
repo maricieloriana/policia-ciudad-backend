@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personas detenidas | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <header>
+        <h1>Personas detenidas</h1>
+        <a th:href="@{/inicio}">Volver al inicio</a>
+    </header>
+
+    <main>
+        <h2>Personas detenidas registradas</h2>
+        <p th:if="${esAdministrador}">
+            <a th:href="@{/personas-detenidas/nueva}">
+                Registrar persona detenida
+            </a>
+        </p>
+
+        <p th:if="${mensajeExito}"
+           th:text="${mensajeExito}"
+           role="status">
+        </p>
+
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
+
+        <p th:if="${#lists.isEmpty(personasDetenidas)}">
+            No hay personas detenidas registradas.
+        </p>
+
+        <table th:unless="${#lists.isEmpty(personasDetenidas)}">
+            <caption>Datos de las personas detenidas registradas</caption>
+
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Nombre completo</th>
+                    <th scope="col">Banda</th>
+                    <th scope="col" th:if="${esAdministrador}">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="persona : ${personasDetenidas}">
+                    <td th:text="${persona.id}">1</td>
+
+                    <td th:text="${persona.nombreCompleto}">
+                        Nombre
+                    </td>
+
+                    <td th:text="${persona.numeroBanda != null
+                        ? persona.numeroBanda : 'Sin banda'}">
+                        Sin banda
+                    </td>
+
+                    <td th:if="${esAdministrador}">
+                        <div class="acciones">
+                            <a th:href="@{/personas-detenidas/{id}/nombre(id=${persona.id})}">
+                                Editar nombre
+                            </a>
+
+                            <a th:href="@{/personas-detenidas/{id}/banda(id=${persona.id})}">
+                                Cambiar banda
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>

@@ -322,6 +322,28 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.POST, "/bandas/{numero}/eliminar")
                         .hasRole("ADMINISTRADOR")
                         
+                        // Administradores e investigadores pueden consultar personas detenidas
+                        .requestMatchers(HttpMethod.GET, "/personas-detenidas")
+                        .hasAnyRole("ADMINISTRADOR", "INVESTIGADOR")
+                        
+                        // Solo el administrador puede abrir el registro de personas detenidas
+                        .requestMatchers(HttpMethod.GET, "/personas-detenidas/nueva")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        .requestMatchers(HttpMethod.POST, "/personas-detenidas")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        .requestMatchers(HttpMethod.GET, "/personas-detenidas/{id}/banda")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/personas-detenidas/{id}/banda")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        .requestMatchers(HttpMethod.GET, "/personas-detenidas/{id}/nombre")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.POST, "/personas-detenidas/{id}/nombre")
+                        .hasRole("ADMINISTRADOR")
+                        
                         // Las demás rutas quedan bloqueadas por ahora
                         .anyRequest().denyAll() //bloquea las rutas que aún no habilitamos
                 )

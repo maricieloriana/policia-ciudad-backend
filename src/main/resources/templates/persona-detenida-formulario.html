@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar persona detenida | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <header>
+        <h1>Registrar persona detenida</h1>
+        <a th:href="@{/personas-detenidas}">Volver a la lista</a>
+    </header>
+
+    <main>
+        <h2>Datos de la persona</h2>
+
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
+
+        <form th:action="@{/personas-detenidas}"
+              th:object="${persona}"
+              method="post">
+
+            <div>
+                <label for="nombreCompleto">Nombre completo</label>
+                <input type="text"
+                       id="nombreCompleto"
+                       th:field="*{nombreCompleto}"
+                       maxlength="255"
+                       required>
+            </div>
+
+            <div>
+                <label for="numeroBanda">Banda</label>
+                <select id="numeroBanda" th:field="*{numeroBanda}">
+                    <option value="">Sin banda</option>
+                    <option th:each="banda : ${bandas}"
+                            th:value="${banda.numero}"
+                            th:text="${'Banda ' + banda.numero}">
+                    </option>
+                </select>
+            </div>
+
+            <button type="submit">Guardar persona</button>
+        </form>
+    </main>
+</body>
+</html>
