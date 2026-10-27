@@ -270,6 +270,17 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.POST, "/sucursales")
                         .hasRole("ADMINISTRADOR")
                         
+                        // Solo el administrador puede abrir y guardar la edición
+                        .requestMatchers(HttpMethod.GET, "/sucursales/{codigo}/editar")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.POST, "/sucursales/{codigo}/editar")
+                        .hasRole("ADMINISTRADOR")
+                        
+                        // Solo el administrador puede eliminar sucursales desde la web
+                        .requestMatchers(HttpMethod.POST, "/sucursales/{codigo}/eliminar")
+                        .hasRole("ADMINISTRADOR")
+                        
                         // Las demás rutas quedan bloqueadas por ahora
                         .anyRequest().denyAll() //bloquea las rutas que aún no habilitamos
                 )

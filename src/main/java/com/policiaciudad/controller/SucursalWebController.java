@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.policiaciudad.dto.SucursalDTO;
+import org.springframework.web.bind.annotation.PathVariable;
+import com.policiaciudad.exception.RecursoEnUsoException;
 
 @Controller
 public class SucursalWebController {
@@ -91,5 +94,84 @@ public class SucursalWebController {
 
             return "sucursal-formulario";
         }
+    }
+    
+        @GetMapping("/sucursales/{codigo}/editar")
+    public String mostrarEdicion(
+            @PathVariable int codigo, Model modelo) {
+
+        SucursalDTO actual = servicio.consultarPorCodigo(codigo);
+
+        // Carga los datos actuales en el objeto del formulario
+        RegistroSucursalDTO datos = new RegistroSucursalDTO();
+        datos.setCodigo(actual.getCodigo());
+        datos.setDomicilio(actual.getDomicilio());
+        datos.setCantidadEmpleados(actual.getCantidadEmpleados());
+
+        modelo.addAttribute("sucursal", datos);
+        modelo.addAttribute("codigoSucursal", codigo);
+
+        return "sucursal-edicion";
+    }
+
+    @PostMapping("/sucursales/{codigo}/editar")
+    public String actualizar(
+            @PathVariable int codigo,
+            @ModelAttribute("sucursal") RegistroSucursalDTO datos,
+            BindingResult resultado,
+            Model modelo,
+            RedirectAttributes mensajes) {
+
+        // Conserva el código de la dirección si hay errores
+        modelo.addAttribute("codigoSucursal", codigo);
+
+        if (resultado.hasErrors()) {
+            modelo.addAttribute(
+                    "mensajeError",
+                    "Revisá el domicilio y la cantidad de empleados.");
+            return "sucursal-edicion";
+        }
+
+        try {
+            servicio.actualizarDatos(
+                    codigo,
+                    datos.getDomicilio(),
+                    datos.getCantidadEmpleados());
+
+            mensajes.addFlashAttribute(
+                    "mensajeExito",
+                    "Sucursal actualizada correctamente.");
+
+            return "redirect:/sucursales";
+
+        } catch (DatosInvalidosException
+                | RecursoNoEncontradoException excepcion) {
+
+            modelo.addAttribute("mensajeError", excepcion.getMessage());
+            return "sucursal-edicion";
+        }
+    }
+    
+    @PostMapping("/sucursales/{codigo}/eliminar")
+    public String eliminar(
+            @PathVariable int codigo,
+            RedirectAttributes mensajes) {
+
+        try {
+            servicio.eliminar(codigo);
+
+            mensajes.addFlashAttribute(
+                    "mensajeExito",
+                    "Sucursal eliminada correctamente.");
+
+        } catch (DatosInvalidosException
+                | RecursoNoEncontradoException
+                | RecursoEnUsoException excepcion) {
+
+            mensajes.addFlashAttribute(
+                    "mensajeError", excepcion.getMessage());
+        }
+
+        return "redirect:/sucursales";
     }
 }

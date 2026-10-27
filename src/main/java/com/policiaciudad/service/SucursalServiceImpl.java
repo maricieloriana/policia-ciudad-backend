@@ -210,4 +210,36 @@ public class SucursalServiceImpl implements SucursalService {
 
         sucursalRepository.delete(sucursal);
     }
+    @Override
+    @Transactional
+    public SucursalDTO actualizarDatos(
+            int codigo, String domicilio, Integer cantidadEmpleados) {
+
+        if (codigo <= 0) {
+            throw new DatosInvalidosException(
+                    "El codigo de la sucursal debe ser positivo.");
+        }
+
+        if (cantidadEmpleados == null) {
+            throw new DatosInvalidosException(
+                    "La cantidad de empleados es obligatoria.");
+        }
+
+        Sucursal sucursal = sucursalRepository.findById(codigo)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "No existe una sucursal con el codigo "
+                        + codigo + "."));
+
+        // Reutiliza las validaciones del modelo
+        sucursal.cambiarDomicilio(domicilio);
+        sucursal.actualizarCantidadEmpleados(cantidadEmpleados);
+
+        Sucursal actualizada = sucursalRepository.save(sucursal);
+
+        return new SucursalDTO(
+                actualizada.getCodigo(),
+                actualizada.getCodigoEntidadBancaria(),
+                actualizada.getDomicilio(),
+                actualizada.getCantidadEmpleados());
+    }
 }

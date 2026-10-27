@@ -18,4 +18,6 @@ public interface SucursalService {
     SucursalDTO registrar(int codigoEntidadBancaria, RegistroSucursalDTO datos);
     // Define la eliminación de una sucursal respetando sus restricciones
     void eliminar(int codigo);
+    // Actualiza ambos datos dentro de una misma operación
+    SucursalDTO actualizarDatos(int codigo, String domicilio, Integer cantidadEmpleados);
 }
