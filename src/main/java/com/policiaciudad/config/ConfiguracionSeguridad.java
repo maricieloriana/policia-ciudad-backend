@@ -196,7 +196,12 @@ public class ConfiguracionSeguridad {
                         .hasRole("ADMINISTRADOR")
                         
                         // Permite abrir la pantalla de acceso y cargar sus estilos
-                        .requestMatchers(HttpMethod.GET, "/login", "/css/**")
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/login",
+                                "/css/**",
+                                "/js/**",
+                                "/sesion/csrf")
                         .permitAll()
 
                         // La pantalla de inicio requiere una cuenta autenticada
@@ -421,6 +426,9 @@ public class ConfiguracionSeguridad {
 
                 // Permite cerrar la sesión
                 .logout(salida -> salida
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
