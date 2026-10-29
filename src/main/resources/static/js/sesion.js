@@ -63,10 +63,22 @@
         const vuelvePorHistorial =
                 evento.persisted || navegacion?.type === "back_forward";
 
-        if (vuelvePorHistorial) {
+        if (!vuelvePorHistorial) {
+            document.documentElement.style.visibility = "visible";
+            return;
+        }
+
+        const rutaLogin = new URL(
+                configuracion.login, window.location.href).pathname;
+
+        if (window.location.pathname === rutaLogin) {
+            // Volver al acceso mediante el historial cierra la sesion
             cerrarPorHistorial();
         } else {
-            document.documentElement.style.visibility = "visible";
+            // Revalida la pagina en el servidor sin cerrar una sesion activa.
+            // Si ya se cerro la sesion, Spring Security exige autenticacion.
+            document.documentElement.style.visibility = "hidden";
+            window.location.reload();
         }
     });
 

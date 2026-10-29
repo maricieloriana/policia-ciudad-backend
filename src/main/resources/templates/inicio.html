@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio | Policía de la Ciudad</title>
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script th:src="@{/js/sesion.js}"
+            th:attr="data-csrf=@{/sesion/csrf},
+            data-logout=@{/logout},
+            data-login=@{/login}"
+            defer>
+    </script>
 </head>
 <body>
 
@@ -57,6 +63,8 @@
                 <li><a th:href="@{/asaltos}">Consultar asaltos</a></li>
                 <li><a th:href="@{/juicios}">Consultar juicios</a></li>
                 <li><a th:href="@{/jueces}">Consultar jueces</a></li>
+                <li><a th:href="@{/vigilantes}">Consultar vigilantes</a></li>
+                <li><a th:href="@{/contrataciones}">Consultar contrataciones</a></li>
             </ul>
         </section>
 
