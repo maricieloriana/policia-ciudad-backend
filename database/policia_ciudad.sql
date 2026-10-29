@@ -31,11 +31,12 @@ CREATE TABLE IF NOT EXISTS `asaltos` (
   KEY `fk_asaltos_detenidas` (`id_persona_detenida`),
   CONSTRAINT `fk_asaltos_detenidas` FOREIGN KEY (`id_persona_detenida`) REFERENCES `personas_detenidas` (`id`),
   CONSTRAINT `fk_asaltos_sucursales` FOREIGN KEY (`codigo_sucursal`) REFERENCES `sucursales` (`codigo`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla policia_ciudad.asaltos: ~1 rows (aproximadamente)
+-- Volcando datos para la tabla policia_ciudad.asaltos: ~2 rows (aproximadamente)
 INSERT INTO `asaltos` (`id`, `codigo_sucursal`, `id_persona_detenida`, `fecha`) VALUES
-	(1, 2001, 7, '2026-10-18');
+	(1, 2001, 7, '2026-10-18'),
+	(2, 2003, 14, '2026-10-26');
 
 -- Volcando estructura para tabla policia_ciudad.bandas
 CREATE TABLE IF NOT EXISTS `bandas` (
@@ -63,13 +64,14 @@ CREATE TABLE IF NOT EXISTS `contrataciones` (
   CONSTRAINT `fk_contrataciones_sucursales` FOREIGN KEY (`codigo_sucursal`) REFERENCES `sucursales` (`codigo`),
   CONSTRAINT `fk_contrataciones_vigilantes` FOREIGN KEY (`id_vigilante`) REFERENCES `vigilantes` (`id`),
   CONSTRAINT `chk_contrataciones_con_arma` CHECK ((`con_arma` in (0,1)))
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla policia_ciudad.contrataciones: ~3 rows (aproximadamente)
+-- Volcando datos para la tabla policia_ciudad.contrataciones: ~4 rows (aproximadamente)
 INSERT INTO `contrataciones` (`id`, `codigo_sucursal`, `id_vigilante`, `fecha`, `con_arma`) VALUES
 	(1, 2001, 1, '2026-10-13', 1),
 	(2, 2001, 1, '2026-10-20', 0),
-	(3, 2002, 4, '2026-10-19', 0);
+	(3, 2002, 4, '2026-10-19', 0),
+	(5, 2003, 12, '2026-10-28', 1);
 
 -- Volcando estructura para tabla policia_ciudad.entidades_bancarias
 CREATE TABLE IF NOT EXISTS `entidades_bancarias` (
@@ -83,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `entidades_bancarias` (
 -- Volcando datos para la tabla policia_ciudad.entidades_bancarias: ~2 rows (aproximadamente)
 INSERT INTO `entidades_bancarias` (`codigo`, `domicilio_central`) VALUES
 	(1001, 'Domicilio central de prueba'),
-	(1002, 'Domicilio central actualizado');
+	(1002, 'Avenida Central 456');
 
 -- Volcando estructura para tabla policia_ciudad.jueces
 CREATE TABLE IF NOT EXISTS `jueces` (
@@ -116,7 +118,7 @@ CREATE TABLE IF NOT EXISTS `juicios` (
   CONSTRAINT `fk_juicios_asalto_detenida` FOREIGN KEY (`id_asalto`, `id_persona_detenida`) REFERENCES `asaltos` (`id`, `id_persona_detenida`),
   CONSTRAINT `fk_juicios_jueces` FOREIGN KEY (`id_juez`) REFERENCES `jueces` (`id`),
   CONSTRAINT `chk_juicios_resolucion` CHECK ((((`condenado` = 0) and (`anios_carcel` = 0)) or ((`condenado` = 1) and (`anios_carcel` > 0))))
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando datos para la tabla policia_ciudad.juicios: ~1 rows (aproximadamente)
 INSERT INTO `juicios` (`id`, `id_asalto`, `id_persona_detenida`, `id_juez`, `condenado`, `anios_carcel`) VALUES
@@ -128,9 +130,9 @@ CREATE TABLE IF NOT EXISTS `personas` (
   `nombre_completo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `chk_personas_nombre` CHECK ((char_length(trim(`nombre_completo`)) > 0))
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla policia_ciudad.personas: ~10 rows (aproximadamente)
+-- Volcando datos para la tabla policia_ciudad.personas: ~12 rows (aproximadamente)
 INSERT INTO `personas` (`id`, `nombre_completo`) VALUES
 	(1, 'Vigilante de prueba'),
 	(2, 'Administrador inicial'),
@@ -141,7 +143,9 @@ INSERT INTO `personas` (`id`, `nombre_completo`) VALUES
 	(7, 'Persona detenida de prueba actualizada'),
 	(8, 'Segunda persona detenida de prueba'),
 	(9, 'Persona detenida de la banda 100'),
-	(12, 'Vigilante creado desde la web');
+	(12, 'Vigilante creado desde la web'),
+	(14, 'Persona de prueba web actualizada'),
+	(17, 'prrueba en maquina uni');
 
 -- Volcando estructura para tabla policia_ciudad.personas_detenidas
 CREATE TABLE IF NOT EXISTS `personas_detenidas` (
@@ -153,11 +157,13 @@ CREATE TABLE IF NOT EXISTS `personas_detenidas` (
   CONSTRAINT `fk_detenidas_personas` FOREIGN KEY (`id`) REFERENCES `personas` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla policia_ciudad.personas_detenidas: ~3 rows (aproximadamente)
+-- Volcando datos para la tabla policia_ciudad.personas_detenidas: ~5 rows (aproximadamente)
 INSERT INTO `personas_detenidas` (`id`, `numero_banda`) VALUES
 	(7, NULL),
 	(8, NULL),
-	(9, 100);
+	(9, 100),
+	(14, 100),
+	(17, NULL);
 
 -- Volcando estructura para tabla policia_ciudad.sucursales
 CREATE TABLE IF NOT EXISTS `sucursales` (
@@ -193,13 +199,14 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   CONSTRAINT `fk_usuarios_personas` FOREIGN KEY (`id_persona`) REFERENCES `personas` (`id`),
   CONSTRAINT `chk_usuarios_nombre` CHECK ((char_length(trim(`nombre_usuario`)) > 0)),
   CONSTRAINT `chk_usuarios_password_hash` CHECK ((char_length(trim(`password_hash`)) > 0))
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla policia_ciudad.usuarios: ~3 rows (aproximadamente)
+-- Volcando datos para la tabla policia_ciudad.usuarios: ~4 rows (aproximadamente)
 INSERT INTO `usuarios` (`id`, `id_persona`, `nombre_usuario`, `password_hash`, `rol`) VALUES
 	(1, 2, 'adminprueba', '$2a$10$tHjFWhmnrYJQ5agQygkFsOjGwL7fiin3DsSxHdNhi9izt4.2nA.X.', 'ADMINISTRADOR'),
 	(2, 3, 'investigadorprueba', '$2a$10$jNBovAF9BxZWIaALgj800O1CzgmbOg9wmeNi2tI.sHIGaioVe65u6', 'INVESTIGADOR'),
-	(3, 1, 'vigilanteprueba', '$2a$10$u5WnXHijqt7hBkyz21MPI.iyIdxk14zKHluCKRjkwjou.hgp7fNN6', 'VIGILANTE');
+	(3, 1, 'vigilanteprueba', '$2a$10$u5WnXHijqt7hBkyz21MPI.iyIdxk14zKHluCKRjkwjou.hgp7fNN6', 'VIGILANTE'),
+	(4, 12, 'vigilantewebprueba', '$2a$10$f.TADMqkjiBG4edDklRFRO3RZD3/zpuiXcaxp8EZ1zWm0qv19BnVO', 'VIGILANTE');
 
 -- Volcando estructura para tabla policia_ciudad.vigilantes
 CREATE TABLE IF NOT EXISTS `vigilantes` (
