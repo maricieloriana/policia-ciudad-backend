@@ -205,8 +205,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 INSERT INTO `usuarios` (`id`, `id_persona`, `nombre_usuario`, `password_hash`, `rol`) VALUES
 	(1, 2, 'adminprueba', '$2a$10$tHjFWhmnrYJQ5agQygkFsOjGwL7fiin3DsSxHdNhi9izt4.2nA.X.', 'ADMINISTRADOR'),
 	(2, 3, 'investigadorprueba', '$2a$10$jNBovAF9BxZWIaALgj800O1CzgmbOg9wmeNi2tI.sHIGaioVe65u6', 'INVESTIGADOR'),
-	(3, 1, 'vigilanteprueba', '$2a$10$u5WnXHijqt7hBkyz21MPI.iyIdxk14zKHluCKRjkwjou.hgp7fNN6', 'VIGILANTE'),
-	(4, 12, 'vigilantewebprueba', '$2a$10$f.TADMqkjiBG4edDklRFRO3RZD3/zpuiXcaxp8EZ1zWm0qv19BnVO', 'VIGILANTE');
+	(3, 1, 'vigilanteprueba', '$2a$10$u5WnXHijqt7hBkyz21MPI.iyIdxk14zKHluCKRjkwjou.hgp7fNN6', 'VIGILANTE');
 
 -- Volcando estructura para tabla policia_ciudad.vigilantes
 CREATE TABLE IF NOT EXISTS `vigilantes` (
