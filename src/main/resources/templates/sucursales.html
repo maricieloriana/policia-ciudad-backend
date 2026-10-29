@@ -21,7 +21,7 @@
     <main>
         <h2>Sucursales registradas</h2>
         <p th:if="${esAdministrador}">
-            <a th:href="@{/sucursales/nueva}">Registrar sucursal</a>
+            <a class="boton" th:href="@{/sucursales/nueva}">Registrar sucursal</a>
         </p>
 
         <p th:if="${mensajeExito}"
@@ -37,7 +37,8 @@
             No hay sucursales registradas.
         </p>
 
-        <table th:unless="${#lists.isEmpty(sucursales)}">
+        <div class="tabla-contenedor">
+<table th:unless="${#lists.isEmpty(sucursales)}">
             <caption>Datos de las sucursales registradas</caption>
 
             <thead>
@@ -56,9 +57,9 @@
                     <td th:text="${sucursal.codigoEntidadBancaria}">1001</td>
                     <td th:text="${sucursal.domicilio}">Domicilio</td>
                     <td th:text="${sucursal.cantidadEmpleados}">10</td>
-                    <td th:text="${sucursal.cantidadEmpleados}">10</td>
-                    <td th:if="${esAdministrador}">
-                        <a th:href="@{/sucursales/{codigo}/editar(codigo=${sucursal.codigo})}">
+                    <td class="acciones-celda" th:if="${esAdministrador}">
+                        <div class="acciones">
+                        <a class="boton" th:href="@{/sucursales/{codigo}/editar(codigo=${sucursal.codigo})}">
                             Editar
                         </a>
 
@@ -69,10 +70,13 @@
 
                             <button type="submit">Eliminar</button>
                         </form>
+                    
+                        </div>
                     </td>
                 </tr>
             </tbody>
         </table>
+        </div>
     </main>
 </body>
 </html>

@@ -1,5 +1,9 @@
 package com.policiaciudad.config;
 
+import com.policiaciudad.repository.UsuarioRepository;
+import com.policiaciudad.security.CuentaVigenteFilter;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
+
 import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +23,7 @@ public class ConfiguracionSeguridad {
     }
 
     @Bean // Define los controles que se aplican a las solicitudes
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UsuarioRepository usuarioRepository)
             throws Exception { //SecurityFilterChain aplica los controles antes de llegar al controlador
 // declara posibles errores al construir la configuración
         http
@@ -410,6 +414,10 @@ public class ConfiguracionSeguridad {
                         .hasRole("ADMINISTRADOR")
 
                         // Las demás rutas quedan bloqueadas por ahora
+                        .requestMatchers(HttpMethod.GET, "/usuarios", "/usuarios/{id}/editar")
+                        .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/usuarios/{id}/editar", "/usuarios/{id}/eliminar")
+                        .hasRole("ADMINISTRADOR")
                         .anyRequest().denyAll() //bloquea las rutas que aún no habilitamos
                 )
                 // Recibe las credenciales mediante HTTP Basic
@@ -434,7 +442,8 @@ public class ConfiguracionSeguridad {
                 )
 
                 // Mantiene activa la protección CSRF
-                .csrf(Customizer.withDefaults());  //CSRF agrega un token de protección a las solicitudes que modifican datos
+                .csrf(Customizer.withDefaults())
+                .addFilterBefore(new CuentaVigenteFilter(usuarioRepository), AuthorizationFilter.class);  //CSRF agrega un token de protección a las solicitudes que modifican datos
 
         return http.build();
     }

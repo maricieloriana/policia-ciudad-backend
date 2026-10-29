@@ -58,13 +58,15 @@
                        required>
             </div>
 
-            <button type="submit"
+            <div class="acciones">
+                <button type="submit"
                     th:text="${idVigilante != null}
                     ? 'Guardar cambios'
                     : 'Guardar vigilante'">
                 Guardar
             </button>
-            <a th:href="@{/vigilantes}">Cancelar</a>
+                <a class="boton" th:href="@{/vigilantes}">Cancelar</a>
+            </div>
         </form>
     </main>
 

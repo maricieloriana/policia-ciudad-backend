@@ -23,7 +23,7 @@
         <h2 th:text="${titulo}">Contrataciones registradas</h2>
         <!-- Solo el administrador ve la opción de registrar -->
         <p th:if="${esAdministrador}">
-        <a th:href="@{/contrataciones/nueva}">Registrar contratación</a>
+        <a class="boton" th:href="@{/contrataciones/nueva}">Registrar contratación</a>
         </p>
 
         <!-- Confirma el registro después de volver a la lista -->
@@ -43,7 +43,8 @@
             No hay contrataciones registradas.
         </p>
 
-        <table th:unless="${#lists.isEmpty(contrataciones)}">
+        <div class="tabla-contenedor">
+<table th:unless="${#lists.isEmpty(contrataciones)}">
             <caption>Datos de las contrataciones registradas</caption>
 
             <thead>
@@ -65,8 +66,9 @@
                     <td th:text="${contratacion.idVigilante}">1</td>
                     <td th:text="${contratacion.fecha}">2026-10-13</td>
                     <td th:text="${contratacion.conArma ? 'Sí' : 'No'}">Sí</td>
-                    <td th:if="${esAdministrador}">
-                        <a th:href="@{/contrataciones/{id}/editar(id=${contratacion.id})}">
+                    <td class="acciones-celda" th:if="${esAdministrador}">
+                        <div class="acciones">
+                        <a class="boton" th:href="@{/contrataciones/{id}/editar(id=${contratacion.id})}">
                             Editar
                         </a>
 
@@ -77,10 +79,13 @@
 
                             <button type="submit">Eliminar</button>
                         </form>
+                    
+                        </div>
                     </td>
                 </tr>
             </tbody>
         </table>
+        </div>
     </main>
 
 </body>

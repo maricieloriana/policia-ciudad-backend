@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script th:src="@{/js/sesion.js}"
+            th:attr="data-csrf=@{/sesion/csrf},data-logout=@{/logout},data-login=@{/login}"
+            defer></script>
+    <title>Cuentas de usuario | Policía de la Ciudad</title>
+</head>
+<body>
+    <header><h1>Cuentas de usuario</h1><a th:href="@{/inicio}">Volver al inicio</a></header>
+    <main>
+        <h2>Cuentas registradas</h2>
+        <p><a class="boton" th:href="@{/usuarios/nuevo}">Crear cuenta de usuario</a></p>
+        <p th:if="${mensajeExito}" th:text="${mensajeExito}" role="status"></p>
+        <p th:if="${mensajeError}" th:text="${mensajeError}" role="alert"></p>
+        <p th:if="${#lists.isEmpty(usuarios)}">No hay cuentas registradas.</p>
+        <div class="tabla-contenedor">
+            <table th:unless="${#lists.isEmpty(usuarios)}">
+                <caption>Las contraseñas no se muestran. Eliminar una cuenta conserva a su titular.</caption>
+                <thead><tr><th scope="col">ID de cuenta</th><th scope="col">ID de persona</th><th scope="col">Usuario</th><th scope="col">Rol</th><th scope="col">Acciones</th></tr></thead>
+                <tbody>
+                    <tr th:each="usuario : ${usuarios}">
+                        <td th:text="${usuario.id}">1</td>
+                        <td th:text="${usuario.idPersona}">2</td>
+                        <td th:text="${usuario.nombreUsuario}">Usuario</td>
+                        <td th:text="${usuario.rol}">ADMINISTRADOR</td>
+                        <td class="acciones-celda">
+                            <span th:if="${usuario.nombreUsuario == nombreUsuarioActual}">Tu cuenta actual</span>
+                            <div class="acciones" th:unless="${usuario.nombreUsuario == nombreUsuarioActual}">
+                                <a class="boton" th:href="@{/usuarios/{id}/editar(id=${usuario.id})}">Editar</a>
+                                <form th:action="@{/usuarios/{id}/eliminar(id=${usuario.id})}" method="post"
+                                      onsubmit="return confirm('¿Querés eliminar esta cuenta? La persona titular se conserva.');">
+                                    <button type="submit">Eliminar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

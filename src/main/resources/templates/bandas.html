@@ -21,7 +21,7 @@
     <main>
         <h2>Bandas registradas</h2>
         <p th:if="${esAdministrador}">
-            <a th:href="@{/bandas/nueva}">Registrar banda</a>
+            <a class="boton" th:href="@{/bandas/nueva}">Registrar banda</a>
         </p>
 
         <p th:if="${mensajeExito}"
@@ -37,7 +37,8 @@
             No hay bandas registradas.
         </p>
 
-        <table th:unless="${#lists.isEmpty(bandas)}">
+        <div class="tabla-contenedor">
+<table th:unless="${#lists.isEmpty(bandas)}">
             <caption>Datos de las bandas registradas</caption>
 
             <thead>
@@ -53,8 +54,9 @@
                     <td th:text="${banda.numero}">100</td>
                     <td th:text="${banda.cantidadMiembros}">6</td>
 
-                    <td th:if="${esAdministrador}">
-                        <a th:href="@{/bandas/{numero}/editar(numero=${banda.numero})}">
+                    <td class="acciones-celda" th:if="${esAdministrador}">
+                        <div class="acciones">
+                        <a class="boton" th:href="@{/bandas/{numero}/editar(numero=${banda.numero})}">
                             Editar
                         </a>
 
@@ -65,10 +67,13 @@
 
                             <button type="submit">Eliminar</button>
                         </form>
+                    
+                        </div>
                     </td>
                 </tr>
             </tbody>
         </table>
+        </div>
     </main>
 </body>
 </html>

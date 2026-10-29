@@ -1,52 +1,52 @@
 
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aviso | Policía de la Ciudad</title>
-    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Aviso | Policía de la Ciudad</title>
+        <link rel="stylesheet" th:href="@{/css/estilos.css}">
 
-    <script th:src="@{/js/sesion.js}"
-            th:attr="data-csrf=@{/sesion/csrf},
-                     data-logout=@{/logout},
-                     data-login=@{/login}"
-            defer>
-    </script>
-</head>
-<body>
-    <header>
-        <h1>Policía de la Ciudad</h1>
-    </header>
+        <script th:src="@{/js/sesion.js}"
+                th:attr="data-csrf=@{/sesion/csrf},
+                data-logout=@{/logout},
+                data-login=@{/login}"
+                defer>
+        </script>
+    </head>
+    <body>
+        <header>
+            <h1>Policía de la Ciudad</h1>
+        </header>
 
-    <main>
-        <h2 th:text="${status == 403
-            ? 'Acceso restringido'
-            : (status == 404
+        <main>
+            <h2 th:text="${status == 403
+                ? 'Acceso restringido'
+                : (status == 404
                 ? 'Página no encontrada'
                 : 'No pudimos completar la solicitud')}">
-            Aviso
-        </h2>
+                Aviso
+            </h2>
 
-        <p th:if="${status == 403}">
-            Tu cuenta no tiene permiso para acceder a esta sección.
-        </p>
+            <p th:if="${status == 403}">
+                Tu cuenta no tiene permiso para acceder a esta sección.
+            </p>
 
-        <p th:if="${status == 404}">
-            La página solicitada no está disponible.
-            Revisá la dirección o volvé al inicio.
-        </p>
+            <p th:if="${status == 404}">
+                La página solicitada no está disponible.
+                Revisá la dirección o volvé al inicio.
+            </p>
 
-        <p th:if="${status != 403 and status != 404}">
-            Ocurrió un problema al procesar la solicitud.
-            Volvé al inicio e intentá nuevamente.
-            Si el problema continúa, informalo al administrador.
-        </p>
+            <p th:if="${status != 403 and status != 404}">
+                Ocurrió un problema al procesar la solicitud.
+                Volvé al inicio e intentá nuevamente.
+                Si el problema continúa, informalo al administrador.
+            </p>
 
-        <div class="acciones">
-            <a th:href="@{/inicio}">Ir al inicio</a>
-            <a th:href="@{/login}">Ir al acceso</a>
-        </div>
-    </main>
-</body>
+            <div class="acciones">
+                <a th:href="@{/inicio}">Ir al inicio</a>
+                <a th:href="@{/login}">Ir al acceso</a>
+            </div>
+        </main>
+    </body>
 </html>

@@ -21,7 +21,7 @@
     <main>
         <h2>Jueces registrados</h2>
         <p th:if="${esAdministrador}">
-            <a th:href="@{/jueces/nuevo}">Registrar juez</a>
+            <a class="boton" th:href="@{/jueces/nuevo}">Registrar juez</a>
         </p>
 
         <p th:if="${mensajeExito}"
@@ -38,7 +38,7 @@
             No hay jueces registrados.
         </p>
 
-        <div style="overflow-x: auto;">
+        <div class="tabla-contenedor">
             <table th:unless="${#lists.isEmpty(jueces)}">
                 <caption>Datos de los jueces registrados</caption>
 
@@ -59,9 +59,9 @@
                         <td th:text="${juez.claveInterna}">5001</td>
                         <td th:text="${juez.aniosServicio}">11</td>
 
-                        <td th:if="${esAdministrador}">
+                        <td class="acciones-celda" th:if="${esAdministrador}">
                             <div class="acciones">
-                                <a th:href="@{/jueces/{id}/editar(id=${juez.id})}">
+                                <a class="boton" th:href="@{/jueces/{id}/editar(id=${juez.id})}">
                                     Editar
                                 </a>
 

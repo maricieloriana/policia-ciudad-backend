@@ -21,7 +21,7 @@
     <main>
         <h2>Entidades bancarias registradas</h2>
         <p th:if="${esAdministrador}">
-            <a th:href="@{/entidades-bancarias/nueva}">
+            <a class="boton" th:href="@{/entidades-bancarias/nueva}">
                 Registrar entidad bancaria
             </a>
         </p>
@@ -39,7 +39,8 @@
             No hay entidades bancarias registradas.
         </p>
 
-        <table th:unless="${#lists.isEmpty(entidades)}">
+        <div class="tabla-contenedor">
+<table th:unless="${#lists.isEmpty(entidades)}">
             <caption>Datos de las entidades bancarias registradas</caption>
 
             <thead>
@@ -57,9 +58,9 @@
                     <td th:text="${entidad.domicilioCentral}">Domicilio</td>
                     <td th:text="${#lists.size(entidad.sucursales)}">2</td>
 
-                    <td th:if="${esAdministrador}">
+                    <td class="acciones-celda" th:if="${esAdministrador}">
                         <div class="acciones">
-                            <a th:href="@{/entidades-bancarias/{codigo}/editar(codigo=${entidad.codigo})}">
+                            <a class="boton" th:href="@{/entidades-bancarias/{codigo}/editar(codigo=${entidad.codigo})}">
                                 Editar
                             </a>
 
@@ -74,6 +75,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
     </main>
 </body>
 </html>

@@ -1,5 +1,12 @@
 package com.policiaciudad.repository;
 
+import java.util.List;
+import com.policiaciudad.modelo.Rol;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import com.policiaciudad.modelo.Usuario;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +22,12 @@ public interface UsuarioRepository
 
     // Comprueba si la persona ya tiene una cuenta
     boolean existsByIdPersona(int idPersona);
+
+    boolean existsByNombreUsuarioAndIdNot(String nombreUsuario, Integer id);
+
+    // Serializa las bajas y cambios de rol que afectan a los administradores.
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select u from Usuario u where u.rol = :rol order by u.id")
+    List<Usuario> bloquearPorRol(@Param("rol") Rol rol);
+
 }//Spring genera las consultas a partir de los nombres de los atributos de Usuario

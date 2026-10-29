@@ -21,7 +21,7 @@
     <main>
         <h2>Personas detenidas registradas</h2>
         <p th:if="${esAdministrador}">
-            <a th:href="@{/personas-detenidas/nueva}">
+            <a class="boton" th:href="@{/personas-detenidas/nueva}">
                 Registrar persona detenida
             </a>
         </p>
@@ -40,7 +40,8 @@
             No hay personas detenidas registradas.
         </p>
 
-        <table th:unless="${#lists.isEmpty(personasDetenidas)}">
+        <div class="tabla-contenedor">
+<table th:unless="${#lists.isEmpty(personasDetenidas)}">
             <caption>Datos de las personas detenidas registradas</caption>
 
             <thead>
@@ -62,13 +63,13 @@
                         Sin banda
                     </td>
 
-                    <td th:if="${esAdministrador}">
+                    <td class="acciones-celda" th:if="${esAdministrador}">
                         <div class="acciones">
-                            <a th:href="@{/personas-detenidas/{id}/nombre(id=${persona.id})}">
+                            <a class="boton" th:href="@{/personas-detenidas/{id}/nombre(id=${persona.id})}">
                                 Editar nombre
                             </a>
 
-                            <a th:href="@{/personas-detenidas/{id}/banda(id=${persona.id})}">
+                            <a class="boton" th:href="@{/personas-detenidas/{id}/banda(id=${persona.id})}">
                                 Cambiar banda
                             </a>
 
@@ -83,6 +84,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
     </main>
 </body>
 </html>

@@ -15,7 +15,7 @@
 <body>
     <header>
         <h1>Crear cuenta de usuario</h1>
-        <a th:href="@{/inicio}">Volver al inicio</a>
+        <a th:href="@{/usuarios}">Volver a la lista</a>
     </header>
 
     <main>
@@ -87,7 +87,10 @@
                 </select>
             </div>
 
-            <button type="submit">Crear cuenta</button>
+            <div class="acciones">
+                <button type="submit">Crear cuenta</button>
+                <a class="boton" th:href="@{/usuarios}">Cancelar</a>
+            </div>
         </form>
     </main>
 </body>

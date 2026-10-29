@@ -21,7 +21,7 @@
     <main>
         <h2>Asaltos registrados</h2>
         <p th:if="${esAdministrador}">
-            <a th:href="@{/asaltos/nuevo}">Registrar asalto</a>
+            <a class="boton" th:href="@{/asaltos/nuevo}">Registrar asalto</a>
         </p>
 
         <p th:if="${mensajeExito}"
@@ -38,7 +38,8 @@
             No hay asaltos registrados.
         </p>
 
-        <table th:unless="${#lists.isEmpty(asaltos)}">
+        <div class="tabla-contenedor">
+<table th:unless="${#lists.isEmpty(asaltos)}">
             <caption>Datos de los asaltos registrados</caption>
 
             <thead>
@@ -58,9 +59,9 @@
                     <td th:text="${asalto.idPersonaDetenida}">7</td>
                     <td th:text="${asalto.fecha}">2026-10-18</td>
 
-                    <td th:if="${esAdministrador}">
+                    <td class="acciones-celda" th:if="${esAdministrador}">
                         <div class="acciones">
-                            <a th:href="@{/asaltos/{id}/editar(id=${asalto.id})}">
+                            <a class="boton" th:href="@{/asaltos/{id}/editar(id=${asalto.id})}">
                                 Editar fecha
                             </a>
 
@@ -75,6 +76,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
     </main>
 </body>
 </html>

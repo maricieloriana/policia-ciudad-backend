@@ -21,7 +21,7 @@
     <main>
         <h2>Juicios registrados</h2>
         <p th:if="${esAdministrador}">
-            <a th:href="@{/juicios/nuevo}">Registrar juicio</a>
+            <a class="boton" th:href="@{/juicios/nuevo}">Registrar juicio</a>
         </p>
 
         <p th:if="${mensajeExito}"
@@ -38,7 +38,7 @@
             No hay juicios registrados.
         </p>
 
-        <div style="overflow-x: auto;">
+        <div class="tabla-contenedor">
             <table th:unless="${#lists.isEmpty(juicios)}">
                 <caption>Datos de los juicios registrados</caption>
 
@@ -68,9 +68,9 @@
 
                         <td th:text="${juicio.aniosCarcel}">5</td>
 
-                        <td th:if="${esAdministrador}">
+                        <td class="acciones-celda" th:if="${esAdministrador}">
                             <div class="acciones">
-                                <a th:href="@{/juicios/{id}/editar(id=${juicio.id})}">
+                                <a class="boton" th:href="@{/juicios/{id}/editar(id=${juicio.id})}">
                                     Editar resolución
                                 </a>
 

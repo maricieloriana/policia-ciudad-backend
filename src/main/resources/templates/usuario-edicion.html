@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script th:src="@{/js/sesion.js}"
+            th:attr="data-csrf=@{/sesion/csrf},data-logout=@{/logout},data-login=@{/login}"
+            defer></script>
+    <title>Editar cuenta | Policía de la Ciudad</title>
+</head>
+<body>
+    <header><h1>Editar cuenta de usuario</h1><a th:href="@{/usuarios}">Volver a la lista</a></header>
+    <main>
+        <h2 th:text="${'Cuenta ' + idUsuario}">Cuenta</h2>
+        <p th:text="${'Titular: persona con ID ' + idPersona}">Titular</p>
+        <p>El titular y la contraseña se conservan. Si cambiás el nombre o el rol, esa cuenta deberá iniciar sesión nuevamente.</p>
+        <p th:if="${mensajeExito}" th:text="${mensajeExito}" role="status"></p>
+        <p th:if="${mensajeError}" th:text="${mensajeError}" role="alert"></p>
+        <form th:action="@{/usuarios/{id}/editar(id=${idUsuario})}" th:object="${usuario}" method="post">
+            <div><label for="nombreUsuario">Nombre de usuario</label>
+                <input type="text" id="nombreUsuario" th:field="*{nombreUsuario}" maxlength="255" required>
+            </div>
+            <div><label for="rol">Rol</label>
+                <select id="rol" th:field="*{rol}" required>
+                    <option value="">Seleccioná un rol</option>
+                    <option th:each="rolDisponible : ${roles}" th:value="${rolDisponible}" th:text="${rolDisponible}"></option>
+                </select>
+            </div>
+            <div class="acciones">
+                <button type="submit">Guardar cambios</button>
+                <a class="boton" th:href="@{/usuarios}">Cancelar</a>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

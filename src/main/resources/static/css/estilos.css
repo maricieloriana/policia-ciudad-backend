@@ -63,7 +63,10 @@ input {
     font: inherit;
 }
 
-button {
+button,
+a.boton {
+    display: inline-block;
+    text-decoration: none;
     padding: 11px 20px;
     border: 0;
     border-radius: 6px;
@@ -73,7 +76,8 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+button:hover,
+a.boton:hover {
     background-color: #102d4d;
 }
 
@@ -150,4 +154,37 @@ thead {
     flex-wrap: wrap;
     gap: 12px 20px;
     align-items: center;
+}
+
+/* Las acciones de cada registro permanecen en una misma fila. */
+td.acciones-celda {
+    width: 1%;
+    white-space: nowrap;
+}
+
+td.acciones-celda > .acciones {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 10px;
+}
+
+td.acciones-celda > .acciones > * {
+    flex: 0 0 auto;
+}
+
+td.acciones-celda form {
+    margin: 0;
+}
+
+td.acciones-celda button,
+td.acciones-celda a.boton {
+    white-space: nowrap;
+    overflow-wrap: normal;
+}
+
+/* En pantallas angostas se desplaza la tabla sin apilar las acciones. */
+.tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
 }
