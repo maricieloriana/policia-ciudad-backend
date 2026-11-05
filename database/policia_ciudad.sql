@@ -1,45 +1,34 @@
--- --------------------------------------------------------
--- Host:                         127.0.0.1
--- Versión del servidor:         26.7.0 - MySQL Community Server - GPL
--- SO del servidor:              Win64
--- HeidiSQL Versión:             12.21.0.7344
--- --------------------------------------------------------
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET NAMES utf8 */;
-/*!50503 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
-
--- Volcando estructura de base de datos para policia_ciudad
-CREATE DATABASE IF NOT EXISTS `policia_ciudad` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `policia_ciudad`;
-
--- Volcando estructura para tabla policia_ciudad.asaltos
-CREATE TABLE IF NOT EXISTS `asaltos` (
+-- Estructura y datos actuales del proyecto
+SET NAMES utf8mb4;
+CREATE DATABASE IF NOT EXISTS policia_ciudad CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE policia_ciudad;
+SET FOREIGN_KEY_CHECKS=0;
+CREATE TABLE IF NOT EXISTS `personas` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `codigo_sucursal` int NOT NULL,
-  `id_persona_detenida` int NOT NULL,
-  `fecha` date NOT NULL,
+  `nombre_completo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `apellido` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `dni` varchar(8) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fecha_nacimiento` date DEFAULT NULL,
+  `mail` varchar(254) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `telefono` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_asaltos_id_detenida` (`id`,`id_persona_detenida`),
-  KEY `fk_asaltos_sucursales` (`codigo_sucursal`),
-  KEY `fk_asaltos_detenidas` (`id_persona_detenida`),
-  CONSTRAINT `fk_asaltos_detenidas` FOREIGN KEY (`id_persona_detenida`) REFERENCES `personas_detenidas` (`id`),
-  CONSTRAINT `fk_asaltos_sucursales` FOREIGN KEY (`codigo_sucursal`) REFERENCES `sucursales` (`codigo`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Volcando datos para la tabla policia_ciudad.asaltos: ~3 rows (aproximadamente)
-INSERT INTO `asaltos` (`id`, `codigo_sucursal`, `id_persona_detenida`, `fecha`) VALUES
-	(1, 2001, 7, '2026-10-18'),
-	(2, 2003, 14, '2026-10-26'),
-	(4, 2001, 7, '2026-11-02');
-
--- Volcando estructura para tabla policia_ciudad.bandas
+  UNIQUE KEY `uk_personas_dni` (`dni`),
+  CONSTRAINT `chk_personas_nombre` CHECK ((char_length(trim(`nombre_completo`)) > 0))
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `personas` (`id`, `nombre_completo`, `nombre`, `apellido`, `dni`, `fecha_nacimiento`, `mail`, `telefono`) VALUES (CONVERT(0x31 USING utf8mb4), CONVERT(0x566967696c616e746520646520707275656261 USING utf8mb4), NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `personas` (`id`, `nombre_completo`, `nombre`, `apellido`, `dni`, `fecha_nacimiento`, `mail`, `telefono`) VALUES (CONVERT(0x32 USING utf8mb4), CONVERT(0x41646d696e6973747261646f7220696e696369616c USING utf8mb4), NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `personas` (`id`, `nombre_completo`, `nombre`, `apellido`, `dni`, `fecha_nacimiento`, `mail`, `telefono`) VALUES (CONVERT(0x33 USING utf8mb4), CONVERT(0x496e76657374696761646f7220646520707275656261 USING utf8mb4), NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `personas` (`id`, `nombre_completo`, `nombre`, `apellido`, `dni`, `fecha_nacimiento`, `mail`, `telefono`) VALUES (CONVERT(0x34 USING utf8mb4), CONVERT(0x536567756e646f20766967696c616e746520646520707275656261 USING utf8mb4), NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `personas` (`id`, `nombre_completo`, `nombre`, `apellido`, `dni`, `fecha_nacimiento`, `mail`, `telefono`) VALUES (CONVERT(0x35 USING utf8mb4), CONVERT(0x566967696c616e7465206465207072756562612061637475616c697a61646f USING utf8mb4), NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `personas` (`id`, `nombre_completo`, `nombre`, `apellido`, `dni`, `fecha_nacimiento`, `mail`, `telefono`) VALUES (CONVERT(0x36 USING utf8mb4), CONVERT(0x4a75657a206465207072756562612061637475616c697a61646f USING utf8mb4), NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `personas` (`id`, `nombre_completo`, `nombre`, `apellido`, `dni`, `fecha_nacimiento`, `mail`, `telefono`) VALUES (CONVERT(0x37 USING utf8mb4), CONVERT(0x506572736f6e6120646574656e696461206465207072756562612061637475616c697a616461 USING utf8mb4), NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `personas` (`id`, `nombre_completo`, `nombre`, `apellido`, `dni`, `fecha_nacimiento`, `mail`, `telefono`) VALUES (CONVERT(0x38 USING utf8mb4), CONVERT(0x536567756e646120706572736f6e6120646574656e69646120646520707275656261 USING utf8mb4), NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `personas` (`id`, `nombre_completo`, `nombre`, `apellido`, `dni`, `fecha_nacimiento`, `mail`, `telefono`) VALUES (CONVERT(0x39 USING utf8mb4), CONVERT(0x506572736f6e6120646574656e696461206465206c612062616e646120313030 USING utf8mb4), NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `personas` (`id`, `nombre_completo`, `nombre`, `apellido`, `dni`, `fecha_nacimiento`, `mail`, `telefono`) VALUES (CONVERT(0x3132 USING utf8mb4), CONVERT(0x566967696c616e74652063726561646f206465736465206c6120776562 USING utf8mb4), NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `personas` (`id`, `nombre_completo`, `nombre`, `apellido`, `dni`, `fecha_nacimiento`, `mail`, `telefono`) VALUES (CONVERT(0x3134 USING utf8mb4), CONVERT(0x506572736f6e6120646520707275656261207765622061637475616c697a616461 USING utf8mb4), NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `personas` (`id`, `nombre_completo`, `nombre`, `apellido`, `dni`, `fecha_nacimiento`, `mail`, `telefono`) VALUES (CONVERT(0x3137 USING utf8mb4), CONVERT(0x7072727565626120656e206d617175696e6120756e69 USING utf8mb4), NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `personas` (`id`, `nombre_completo`, `nombre`, `apellido`, `dni`, `fecha_nacimiento`, `mail`, `telefono`) VALUES (CONVERT(0x3138 USING utf8mb4), CONVERT(0x4c6175726120507275656261 USING utf8mb4), CONVERT(0x4c61757261 USING utf8mb4), CONVERT(0x507275656261 USING utf8mb4), CONVERT(0x3939303030303031 USING utf8mb4), CONVERT(0x323030302d31312d3034 USING utf8mb4), CONVERT(0x6c61757261406578616d706c652e636f6d USING utf8mb4), CONVERT(0x31313030303030303030 USING utf8mb4));
 CREATE TABLE IF NOT EXISTS `bandas` (
   `numero` int NOT NULL,
   `cantidad_miembros` int NOT NULL,
@@ -47,12 +36,66 @@ CREATE TABLE IF NOT EXISTS `bandas` (
   CONSTRAINT `chk_bandas_cantidad_miembros` CHECK ((`cantidad_miembros` >= 0)),
   CONSTRAINT `chk_bandas_numero` CHECK ((`numero` > 0))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Volcando datos para la tabla policia_ciudad.bandas: ~1 rows (aproximadamente)
-INSERT INTO `bandas` (`numero`, `cantidad_miembros`) VALUES
-	(100, 6);
-
--- Volcando estructura para tabla policia_ciudad.contrataciones
+INSERT INTO `bandas` (`numero`, `cantidad_miembros`) VALUES (CONVERT(0x313030 USING utf8mb4), CONVERT(0x36 USING utf8mb4));
+CREATE TABLE IF NOT EXISTS `entidades_bancarias` (
+  `codigo` int NOT NULL,
+  `domicilio_central` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`codigo`),
+  CONSTRAINT `chk_entidades_codigo` CHECK ((`codigo` > 0)),
+  CONSTRAINT `chk_entidades_domicilio` CHECK ((char_length(trim(`domicilio_central`)) > 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `entidades_bancarias` (`codigo`, `domicilio_central`) VALUES (CONVERT(0x31303031 USING utf8mb4), CONVERT(0x446f6d6963696c696f2063656e7472616c20646520707275656261 USING utf8mb4));
+INSERT INTO `entidades_bancarias` (`codigo`, `domicilio_central`) VALUES (CONVERT(0x31303032 USING utf8mb4), CONVERT(0x4176656e6964612043656e7472616c20343536 USING utf8mb4));
+CREATE TABLE IF NOT EXISTS `vigilantes` (
+  `id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_vigilantes_personas` FOREIGN KEY (`id`) REFERENCES `personas` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `vigilantes` (`id`) VALUES (CONVERT(0x31 USING utf8mb4));
+INSERT INTO `vigilantes` (`id`) VALUES (CONVERT(0x34 USING utf8mb4));
+INSERT INTO `vigilantes` (`id`) VALUES (CONVERT(0x35 USING utf8mb4));
+INSERT INTO `vigilantes` (`id`) VALUES (CONVERT(0x3132 USING utf8mb4));
+INSERT INTO `vigilantes` (`id`) VALUES (CONVERT(0x3138 USING utf8mb4));
+CREATE TABLE IF NOT EXISTS `jueces` (
+  `id` int NOT NULL,
+  `clave_interna` int NOT NULL,
+  `anios_servicio` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_jueces_clave_interna` (`clave_interna`),
+  CONSTRAINT `fk_jueces_personas` FOREIGN KEY (`id`) REFERENCES `personas` (`id`),
+  CONSTRAINT `chk_jueces_anios_servicio` CHECK ((`anios_servicio` >= 0)),
+  CONSTRAINT `chk_jueces_clave_interna` CHECK ((`clave_interna` > 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `jueces` (`id`, `clave_interna`, `anios_servicio`) VALUES (CONVERT(0x36 USING utf8mb4), CONVERT(0x35303031 USING utf8mb4), CONVERT(0x3131 USING utf8mb4));
+CREATE TABLE IF NOT EXISTS `personas_detenidas` (
+  `id` int NOT NULL,
+  `numero_banda` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_detenidas_bandas` (`numero_banda`),
+  CONSTRAINT `fk_detenidas_bandas` FOREIGN KEY (`numero_banda`) REFERENCES `bandas` (`numero`),
+  CONSTRAINT `fk_detenidas_personas` FOREIGN KEY (`id`) REFERENCES `personas` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `personas_detenidas` (`id`, `numero_banda`) VALUES (CONVERT(0x37 USING utf8mb4), NULL);
+INSERT INTO `personas_detenidas` (`id`, `numero_banda`) VALUES (CONVERT(0x38 USING utf8mb4), NULL);
+INSERT INTO `personas_detenidas` (`id`, `numero_banda`) VALUES (CONVERT(0x3137 USING utf8mb4), NULL);
+INSERT INTO `personas_detenidas` (`id`, `numero_banda`) VALUES (CONVERT(0x39 USING utf8mb4), CONVERT(0x313030 USING utf8mb4));
+INSERT INTO `personas_detenidas` (`id`, `numero_banda`) VALUES (CONVERT(0x3134 USING utf8mb4), CONVERT(0x313030 USING utf8mb4));
+CREATE TABLE IF NOT EXISTS `sucursales` (
+  `codigo` int NOT NULL,
+  `codigo_entidad_bancaria` int NOT NULL,
+  `domicilio` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cantidad_empleados` int NOT NULL,
+  PRIMARY KEY (`codigo`),
+  KEY `fk_sucursales_entidades` (`codigo_entidad_bancaria`),
+  CONSTRAINT `fk_sucursales_entidades` FOREIGN KEY (`codigo_entidad_bancaria`) REFERENCES `entidades_bancarias` (`codigo`),
+  CONSTRAINT `chk_sucursales_codigo` CHECK ((`codigo` > 0)),
+  CONSTRAINT `chk_sucursales_domicilio` CHECK ((char_length(trim(`domicilio`)) > 0)),
+  CONSTRAINT `chk_sucursales_empleados` CHECK ((`cantidad_empleados` >= 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `sucursales` (`codigo`, `codigo_entidad_bancaria`, `domicilio`, `cantidad_empleados`) VALUES (CONVERT(0x32303031 USING utf8mb4), CONVERT(0x31303031 USING utf8mb4), CONVERT(0x446f6d6963696c696f20737563757273616c206465207072756562612031 USING utf8mb4), CONVERT(0x3130 USING utf8mb4));
+INSERT INTO `sucursales` (`codigo`, `codigo_entidad_bancaria`, `domicilio`, `cantidad_empleados`) VALUES (CONVERT(0x32303032 USING utf8mb4), CONVERT(0x31303031 USING utf8mb4), CONVERT(0x446f6d6963696c696f20737563757273616c206465207072756562612032 USING utf8mb4), CONVERT(0x3135 USING utf8mb4));
+INSERT INTO `sucursales` (`codigo`, `codigo_entidad_bancaria`, `domicilio`, `cantidad_empleados`) VALUES (CONVERT(0x32303033 USING utf8mb4), CONVERT(0x31303032 USING utf8mb4), CONVERT(0x446f6d6963696c696f20737563757273616c20323030332061637475616c697a61646f USING utf8mb4), CONVERT(0x3132 USING utf8mb4));
+INSERT INTO `sucursales` (`codigo`, `codigo_entidad_bancaria`, `domicilio`, `cantidad_empleados`) VALUES (CONVERT(0x32303034 USING utf8mb4), CONVERT(0x31303032 USING utf8mb4), CONVERT(0x446f6d6963696c696f20737563757273616c2032303034 USING utf8mb4), CONVERT(0x3135 USING utf8mb4));
 CREATE TABLE IF NOT EXISTS `contrataciones` (
   `id` int NOT NULL AUTO_INCREMENT,
   `codigo_sucursal` int NOT NULL,
@@ -66,45 +109,25 @@ CREATE TABLE IF NOT EXISTS `contrataciones` (
   CONSTRAINT `fk_contrataciones_vigilantes` FOREIGN KEY (`id_vigilante`) REFERENCES `vigilantes` (`id`),
   CONSTRAINT `chk_contrataciones_con_arma` CHECK ((`con_arma` in (0,1)))
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Volcando datos para la tabla policia_ciudad.contrataciones: ~4 rows (aproximadamente)
-INSERT INTO `contrataciones` (`id`, `codigo_sucursal`, `id_vigilante`, `fecha`, `con_arma`) VALUES
-	(1, 2001, 1, '2026-10-13', 1),
-	(2, 2001, 1, '2026-10-20', 0),
-	(3, 2002, 4, '2026-10-19', 0),
-	(5, 2003, 12, '2026-10-28', 1);
-
--- Volcando estructura para tabla policia_ciudad.entidades_bancarias
-CREATE TABLE IF NOT EXISTS `entidades_bancarias` (
-  `codigo` int NOT NULL,
-  `domicilio_central` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`codigo`),
-  CONSTRAINT `chk_entidades_codigo` CHECK ((`codigo` > 0)),
-  CONSTRAINT `chk_entidades_domicilio` CHECK ((char_length(trim(`domicilio_central`)) > 0))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Volcando datos para la tabla policia_ciudad.entidades_bancarias: ~2 rows (aproximadamente)
-INSERT INTO `entidades_bancarias` (`codigo`, `domicilio_central`) VALUES
-	(1001, 'Domicilio central de prueba'),
-	(1002, 'Avenida Central 456');
-
--- Volcando estructura para tabla policia_ciudad.jueces
-CREATE TABLE IF NOT EXISTS `jueces` (
-  `id` int NOT NULL,
-  `clave_interna` int NOT NULL,
-  `anios_servicio` int NOT NULL,
+INSERT INTO `contrataciones` (`id`, `codigo_sucursal`, `id_vigilante`, `fecha`, `con_arma`) VALUES (CONVERT(0x31 USING utf8mb4), CONVERT(0x32303031 USING utf8mb4), CONVERT(0x31 USING utf8mb4), CONVERT(0x323032362d31302d3133 USING utf8mb4), 1);
+INSERT INTO `contrataciones` (`id`, `codigo_sucursal`, `id_vigilante`, `fecha`, `con_arma`) VALUES (CONVERT(0x32 USING utf8mb4), CONVERT(0x32303031 USING utf8mb4), CONVERT(0x31 USING utf8mb4), CONVERT(0x323032362d31302d3230 USING utf8mb4), 0);
+INSERT INTO `contrataciones` (`id`, `codigo_sucursal`, `id_vigilante`, `fecha`, `con_arma`) VALUES (CONVERT(0x33 USING utf8mb4), CONVERT(0x32303032 USING utf8mb4), CONVERT(0x34 USING utf8mb4), CONVERT(0x323032362d31302d3139 USING utf8mb4), 0);
+INSERT INTO `contrataciones` (`id`, `codigo_sucursal`, `id_vigilante`, `fecha`, `con_arma`) VALUES (CONVERT(0x35 USING utf8mb4), CONVERT(0x32303033 USING utf8mb4), CONVERT(0x3132 USING utf8mb4), CONVERT(0x323032362d31302d3238 USING utf8mb4), 1);
+CREATE TABLE IF NOT EXISTS `asaltos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `codigo_sucursal` int NOT NULL,
+  `id_persona_detenida` int NOT NULL,
+  `fecha` date NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_jueces_clave_interna` (`clave_interna`),
-  CONSTRAINT `fk_jueces_personas` FOREIGN KEY (`id`) REFERENCES `personas` (`id`),
-  CONSTRAINT `chk_jueces_anios_servicio` CHECK ((`anios_servicio` >= 0)),
-  CONSTRAINT `chk_jueces_clave_interna` CHECK ((`clave_interna` > 0))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Volcando datos para la tabla policia_ciudad.jueces: ~1 rows (aproximadamente)
-INSERT INTO `jueces` (`id`, `clave_interna`, `anios_servicio`) VALUES
-	(6, 5001, 11);
-
--- Volcando estructura para tabla policia_ciudad.juicios
+  UNIQUE KEY `uk_asaltos_id_detenida` (`id`,`id_persona_detenida`),
+  KEY `fk_asaltos_sucursales` (`codigo_sucursal`),
+  KEY `fk_asaltos_detenidas` (`id_persona_detenida`),
+  CONSTRAINT `fk_asaltos_detenidas` FOREIGN KEY (`id_persona_detenida`) REFERENCES `personas_detenidas` (`id`),
+  CONSTRAINT `fk_asaltos_sucursales` FOREIGN KEY (`codigo_sucursal`) REFERENCES `sucursales` (`codigo`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `asaltos` (`id`, `codigo_sucursal`, `id_persona_detenida`, `fecha`) VALUES (CONVERT(0x31 USING utf8mb4), CONVERT(0x32303031 USING utf8mb4), CONVERT(0x37 USING utf8mb4), CONVERT(0x323032362d31302d3138 USING utf8mb4));
+INSERT INTO `asaltos` (`id`, `codigo_sucursal`, `id_persona_detenida`, `fecha`) VALUES (CONVERT(0x32 USING utf8mb4), CONVERT(0x32303033 USING utf8mb4), CONVERT(0x3134 USING utf8mb4), CONVERT(0x323032362d31302d3236 USING utf8mb4));
+INSERT INTO `asaltos` (`id`, `codigo_sucursal`, `id_persona_detenida`, `fecha`) VALUES (CONVERT(0x34 USING utf8mb4), CONVERT(0x32303031 USING utf8mb4), CONVERT(0x37 USING utf8mb4), CONVERT(0x323032362d31312d3032 USING utf8mb4));
 CREATE TABLE IF NOT EXISTS `juicios` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_asalto` int NOT NULL,
@@ -120,74 +143,7 @@ CREATE TABLE IF NOT EXISTS `juicios` (
   CONSTRAINT `fk_juicios_jueces` FOREIGN KEY (`id_juez`) REFERENCES `jueces` (`id`),
   CONSTRAINT `chk_juicios_resolucion` CHECK ((((`condenado` = 0) and (`anios_carcel` = 0)) or ((`condenado` = 1) and (`anios_carcel` > 0))))
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Volcando datos para la tabla policia_ciudad.juicios: ~1 rows (aproximadamente)
-INSERT INTO `juicios` (`id`, `id_asalto`, `id_persona_detenida`, `id_juez`, `condenado`, `anios_carcel`) VALUES
-	(1, 1, 7, 6, 1, 5);
-
--- Volcando estructura para tabla policia_ciudad.personas
-CREATE TABLE IF NOT EXISTS `personas` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nombre_completo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `chk_personas_nombre` CHECK ((char_length(trim(`nombre_completo`)) > 0))
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Volcando datos para la tabla policia_ciudad.personas: ~12 rows (aproximadamente)
-INSERT INTO `personas` (`id`, `nombre_completo`) VALUES
-	(1, 'Vigilante de prueba'),
-	(2, 'Administrador inicial'),
-	(3, 'Investigador de prueba'),
-	(4, 'Segundo vigilante de prueba'),
-	(5, 'Vigilante de prueba actualizado'),
-	(6, 'Juez de prueba actualizado'),
-	(7, 'Persona detenida de prueba actualizada'),
-	(8, 'Segunda persona detenida de prueba'),
-	(9, 'Persona detenida de la banda 100'),
-	(12, 'Vigilante creado desde la web'),
-	(14, 'Persona de prueba web actualizada'),
-	(17, 'prrueba en maquina uni');
-
--- Volcando estructura para tabla policia_ciudad.personas_detenidas
-CREATE TABLE IF NOT EXISTS `personas_detenidas` (
-  `id` int NOT NULL,
-  `numero_banda` int DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_detenidas_bandas` (`numero_banda`),
-  CONSTRAINT `fk_detenidas_bandas` FOREIGN KEY (`numero_banda`) REFERENCES `bandas` (`numero`),
-  CONSTRAINT `fk_detenidas_personas` FOREIGN KEY (`id`) REFERENCES `personas` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Volcando datos para la tabla policia_ciudad.personas_detenidas: ~5 rows (aproximadamente)
-INSERT INTO `personas_detenidas` (`id`, `numero_banda`) VALUES
-	(7, NULL),
-	(8, NULL),
-	(9, 100),
-	(14, 100),
-	(17, NULL);
-
--- Volcando estructura para tabla policia_ciudad.sucursales
-CREATE TABLE IF NOT EXISTS `sucursales` (
-  `codigo` int NOT NULL,
-  `codigo_entidad_bancaria` int NOT NULL,
-  `domicilio` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `cantidad_empleados` int NOT NULL,
-  PRIMARY KEY (`codigo`),
-  KEY `fk_sucursales_entidades` (`codigo_entidad_bancaria`),
-  CONSTRAINT `fk_sucursales_entidades` FOREIGN KEY (`codigo_entidad_bancaria`) REFERENCES `entidades_bancarias` (`codigo`),
-  CONSTRAINT `chk_sucursales_codigo` CHECK ((`codigo` > 0)),
-  CONSTRAINT `chk_sucursales_domicilio` CHECK ((char_length(trim(`domicilio`)) > 0)),
-  CONSTRAINT `chk_sucursales_empleados` CHECK ((`cantidad_empleados` >= 0))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Volcando datos para la tabla policia_ciudad.sucursales: ~4 rows (aproximadamente)
-INSERT INTO `sucursales` (`codigo`, `codigo_entidad_bancaria`, `domicilio`, `cantidad_empleados`) VALUES
-	(2001, 1001, 'Domicilio sucursal de prueba 1', 10),
-	(2002, 1001, 'Domicilio sucursal de prueba 2', 15),
-	(2003, 1002, 'Domicilio sucursal 2003 actualizado', 12),
-	(2004, 1002, 'Domicilio sucursal 2004', 15);
-
--- Volcando estructura para tabla policia_ciudad.usuarios
+INSERT INTO `juicios` (`id`, `id_asalto`, `id_persona_detenida`, `id_juez`, `condenado`, `anios_carcel`) VALUES (CONVERT(0x31 USING utf8mb4), CONVERT(0x31 USING utf8mb4), CONVERT(0x37 USING utf8mb4), CONVERT(0x36 USING utf8mb4), 1, CONVERT(0x35 USING utf8mb4));
 CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_persona` int NOT NULL,
@@ -201,31 +157,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   CONSTRAINT `chk_usuarios_nombre` CHECK ((char_length(trim(`nombre_usuario`)) > 0)),
   CONSTRAINT `chk_usuarios_password_hash` CHECK ((char_length(trim(`password_hash`)) > 0))
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Volcando datos para la tabla policia_ciudad.usuarios: ~3 rows (aproximadamente)
-INSERT INTO `usuarios` (`id`, `id_persona`, `nombre_usuario`, `password_hash`, `rol`) VALUES
-	(1, 2, 'adminprueba', '$2a$10$tHjFWhmnrYJQ5agQygkFsOjGwL7fiin3DsSxHdNhi9izt4.2nA.X.', 'ADMINISTRADOR'),
-	(2, 3, 'investigadorprueba', '$2a$10$jNBovAF9BxZWIaALgj800O1CzgmbOg9wmeNi2tI.sHIGaioVe65u6', 'INVESTIGADOR'),
-	(3, 1, 'vigilanteprueba', '$2a$10$u5WnXHijqt7hBkyz21MPI.iyIdxk14zKHluCKRjkwjou.hgp7fNN6', 'VIGILANTE');
-
--- Volcando estructura para tabla policia_ciudad.vigilantes
-CREATE TABLE IF NOT EXISTS `vigilantes` (
-  `id` int NOT NULL,
-  `edad` int NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `fk_vigilantes_personas` FOREIGN KEY (`id`) REFERENCES `personas` (`id`),
-  CONSTRAINT `chk_vigilantes_edad` CHECK ((`edad` >= 0))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Volcando datos para la tabla policia_ciudad.vigilantes: ~4 rows (aproximadamente)
-INSERT INTO `vigilantes` (`id`, `edad`) VALUES
-	(1, 30),
-	(4, 35),
-	(5, 29),
-	(12, 28);
-
-/*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
-/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
-/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
+INSERT INTO `usuarios` (`id`, `id_persona`, `nombre_usuario`, `password_hash`, `rol`) VALUES (CONVERT(0x31 USING utf8mb4), CONVERT(0x32 USING utf8mb4), CONVERT(0x61646d696e707275656261 USING utf8mb4), CONVERT(0x2432612431302474486a4657686d6e72594a513561675179676b46734f6a47774c376669696e334473537848644e686939697a74342e326e412e582e USING utf8mb4), CONVERT(0x41444d494e4953545241444f52 USING utf8mb4));
+INSERT INTO `usuarios` (`id`, `id_persona`, `nombre_usuario`, `password_hash`, `rol`) VALUES (CONVERT(0x32 USING utf8mb4), CONVERT(0x33 USING utf8mb4), CONVERT(0x696e76657374696761646f72707275656261 USING utf8mb4), CONVERT(0x243261243130246a4e426f7641463942785a574961414c676a3830304f31437a676d624f6739776d654e693274492e7348494761696f566536357536 USING utf8mb4), CONVERT(0x494e56455354494741444f52 USING utf8mb4));
+INSERT INTO `usuarios` (`id`, `id_persona`, `nombre_usuario`, `password_hash`, `rol`) VALUES (CONVERT(0x33 USING utf8mb4), CONVERT(0x31 USING utf8mb4), CONVERT(0x766967696c616e7465707275656261 USING utf8mb4), CONVERT(0x243261243130247535576e5848696a71743768426b797a32314d50492e69794964786b31347a4b486c75434b526a6b776a6f752e68677037664e4e36 USING utf8mb4), CONVERT(0x564947494c414e5445 USING utf8mb4));
+SET FOREIGN_KEY_CHECKS=1;

@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import com.policiaciudad.dto.ActualizarEdadVigilanteDTO;
 import org.springframework.web.bind.annotation.PatchMapping;
-import com.policiaciudad.dto.ActualizarNombreDTO;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 @RestController // Recibe solicitudes y devuelve respuestas JSON
@@ -38,13 +36,10 @@ public class VigilanteController {
 //El cliente no envía un ID para seleccionar otra persona. La seguridad exige el rol VIGILANTE.
     @PostMapping // Atiende POST /api/vigilantes
     public ResponseEntity<VigilanteDTO> registrar(
-            @RequestBody RegistroVigilanteDTO datos) {
+            @RequestBody RegistroVigilanteDTO datos) { //carga los campos del JSON en DTO
 
         // Delega las validaciones y el guardado al servicio
-        VigilanteDTO registrado = servicio.registrar(
-                datos.getNombreCompleto(),
-                datos.getEdad()
-        );
+        VigilanteDTO registrado = servicio.registrar(datos);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -60,21 +55,13 @@ public class VigilanteController {
         // Recibe el identificador desde la URL y delega la consulta
         return servicio.consultarPorId(id);
     }
-    @PatchMapping("/{id}/edad")
-    public VigilanteDTO actualizarEdad(
-            @PathVariable int id,
-            @RequestBody ActualizarEdadVigilanteDTO datos) {
-
-        // Delega la actualización de edad al servicio
-        return servicio.actualizarEdad(id, datos.getEdad());
-    }
+    
     @PatchMapping("/{id}/nombre")
-    public VigilanteDTO actualizarNombre(
+    public VigilanteDTO actualizarDatos(
             @PathVariable int id,
-            @RequestBody ActualizarNombreDTO datos) {
+            @RequestBody RegistroVigilanteDTO datos) {
 
-        // Delega la corrección del nombre al servicio
-        return servicio.actualizarNombre(id, datos.getNombreCompleto());
+        return servicio.actualizarDatos(id, datos);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable int id) {

@@ -46,6 +46,11 @@
                     <tr>
                         <th scope="col">ID</th>
                         <th scope="col">Nombre completo</th>
+                        <th scope="col">DNI</th>
+                        <th scope="col">Nacimiento</th>
+                        <th scope="col">Edad</th>
+                        <th scope="col">Mail</th>
+                        <th scope="col">Teléfono</th>
                         <th scope="col">Clave interna</th>
                         <th scope="col">Años de servicio</th>
                         <th scope="col" th:if="${esAdministrador}">Acciones</th>
@@ -54,10 +59,21 @@
 
                 <tbody>
                     <tr th:each="juez : ${jueces}">
-                        <td th:text="${juez.id}">6</td>
-                        <td th:text="${juez.nombreCompleto}">Nombre</td>
-                        <td th:text="${juez.claveInterna}">5001</td>
-                        <td th:text="${juez.aniosServicio}">11</td>
+                        <td th:text="${juez.id}"></td>
+                        <td th:text="${juez.nombreCompleto}"></td>
+                        <td th:text="${juez.dni ?: 'Sin informar'}"></td>
+
+                        <td th:text="${juez.fechaNacimiento != null
+                            ? #temporals.format(juez.fechaNacimiento, 'dd/MM/yyyy')
+                            : 'Sin informar'}"></td>
+
+                        <td th:text="${juez.edad != null
+                            ? juez.edad : 'Sin informar'}"></td>
+
+                        <td th:text="${juez.mail ?: 'Sin informar'}"></td>
+                        <td th:text="${juez.telefono ?: 'Sin informar'}"></td>
+                        <td th:text="${juez.claveInterna}"></td>
+                        <td th:text="${juez.aniosServicio}"></td>
 
                         <td class="acciones-celda" th:if="${esAdministrador}">
                             <div class="acciones">

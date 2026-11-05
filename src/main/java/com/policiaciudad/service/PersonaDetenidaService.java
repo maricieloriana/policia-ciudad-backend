@@ -1,22 +1,15 @@
 package com.policiaciudad.service;
 
 import com.policiaciudad.dto.PersonaDetenidaDTO;
+import com.policiaciudad.dto.RegistroPersonaDetenidaDTO;
 import java.util.List;
 
-// Contrato de registro de personas detenidas
 public interface PersonaDetenidaService {
 
-    PersonaDetenidaDTO registrar(
-            String nombreCompleto,
-            Integer numeroBanda
-    );
-    // Define la consulta de las personas detenidas registradas
+    PersonaDetenidaDTO registrar(RegistroPersonaDetenidaDTO datos);
     List<PersonaDetenidaDTO> listar();
-    // Define la consulta de una persona detenida por su identificador
     PersonaDetenidaDTO consultarPorId(int id);
-    // Define la asignación o eliminación de la banda
+    PersonaDetenidaDTO actualizarDatos(int id, RegistroPersonaDetenidaDTO datos);
+    void eliminar(int id);
     PersonaDetenidaDTO actualizarBanda(int id, Integer numeroBanda);
-    // Define la corrección del nombre completo de una persona detenida
-    PersonaDetenidaDTO actualizarNombre(int id, String nombreCompleto);
-    void eliminar(int identificador);
 }

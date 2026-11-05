@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.policiaciudad.dto.ActualizarAniosServicioJuezDTO;
 import org.springframework.web.bind.annotation.PatchMapping;
-import com.policiaciudad.dto.ActualizarNombreDTO;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 @RestController // Recibe solicitudes y devuelve respuestas JSON
@@ -32,12 +31,8 @@ public class JuezController {
             @RequestBody RegistroJuezDTO datos) {
 
         // El servicio valida y guarda los datos
-        JuezDTO registrado = servicio.registrar(
-                datos.getNombreCompleto(),
-                datos.getClaveInterna(),
-                datos.getAniosServicio()
-        );
-
+        JuezDTO registrado = servicio.registrar(datos);
+        
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(registrado);
@@ -64,12 +59,11 @@ public class JuezController {
                 datos.getAniosServicio());
     }
     @PatchMapping("/{id}/nombre")
-    public JuezDTO actualizarNombre(
+    public JuezDTO actualizarDatos(
             @PathVariable int id,
-            @RequestBody ActualizarNombreDTO datos) {
+            @RequestBody RegistroJuezDTO datos) {
 
-        // Delega la corrección del nombre al servicio
-        return servicio.actualizarNombre(id, datos.getNombreCompleto());
+        return servicio.actualizarDatos(id, datos);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable int id) {

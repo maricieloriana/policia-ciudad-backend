@@ -6,12 +6,16 @@ import com.policiaciudad.exception.RegistroDuplicadoException;
 import com.policiaciudad.modelo.Juez;
 import com.policiaciudad.repository.JuezRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.dao.DataIntegrityViolationException;
+import java.sql.SQLException;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import com.policiaciudad.exception.RecursoNoEncontradoException;
 import com.policiaciudad.exception.RecursoEnUsoException;
 import com.policiaciudad.repository.JuicioRepository;
 import com.policiaciudad.repository.UsuarioRepository;
+import com.policiaciudad.repository.PersonaRepository;
+import com.policiaciudad.dto.RegistroJuezDTO;
 
 @Service // Spring registra el servicio
 public class JuezServiceImpl implements JuezService {
@@ -19,71 +23,25 @@ public class JuezServiceImpl implements JuezService {
     private final JuezRepository repositorio;
     private final JuicioRepository juicioRepository;
     private final UsuarioRepository usuarioRepository;
+    private final PersonaRepository personaRepository;
 
     public JuezServiceImpl(
             JuezRepository repositorio,
             JuicioRepository juicioRepository,
-            UsuarioRepository usuarioRepository) {
+            UsuarioRepository usuarioRepository,
+            PersonaRepository personaRepository) {
 
         this.repositorio = repositorio;
         this.juicioRepository = juicioRepository;
         this.usuarioRepository = usuarioRepository;
+        this.personaRepository = personaRepository;
     }
-    @Override
-    @Transactional // Guarda Persona y Juez dentro de una transacción
-    public JuezDTO registrar(String nombreCompleto,
-            Integer claveInterna, Integer aniosServicio) {
 
-        // Comprueba que los datos numéricos estén informados
-        if (claveInterna == null || aniosServicio == null) {
-            throw new DatosInvalidosException(
-                    "La clave interna y los anios de servicio son obligatorios."
-            );
-        }
-
-        // Comprueba el límite de la columna nombre_completo
-        if (nombreCompleto != null
-                && nombreCompleto.trim().length() > 255) {
-
-            throw new DatosInvalidosException(
-                    "El nombre completo no debe superar 255 caracteres."
-            );
-        }
-
-        // El modelo valida el nombre, la clave positiva y la antigüedad
-        Juez juez = new Juez(
-                nombreCompleto,
-                claveInterna,
-                aniosServicio
-        );
-
-        // Comprueba si la clave interna ya está registrada
-        if (repositorio.existsByClaveInterna(juez.getClaveInterna())) {
-            throw new RegistroDuplicadoException(
-                    "La clave interna ya pertenece a un juez."
-            );
-        }
-
-        Juez guardado = repositorio.save(juez);
-
-        return new JuezDTO(
-                guardado.getId(),
-                guardado.getNombreCompleto(),
-                guardado.getClaveInterna(),
-                guardado.getAniosServicio()
-        );
-    }
     @Override
     @Transactional(readOnly = true)
     public List<JuezDTO> listar() {
-
-        // Convierte los jueces guardados en datos de respuesta
         return repositorio.findAll().stream()
-                .map(juez -> new JuezDTO(
-                        juez.getId(),
-                        juez.getNombreCompleto(),
-                        juez.getClaveInterna(),
-                        juez.getAniosServicio()))
+                .map(this::convertirADTO)
                 .toList();
     }
     @Override
@@ -100,11 +58,7 @@ public class JuezServiceImpl implements JuezService {
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "No existe un juez con el identificador " + id + "."));
 
-        return new JuezDTO(
-                juez.getId(),
-                juez.getNombreCompleto(),
-                juez.getClaveInterna(),
-                juez.getAniosServicio());
+        return convertirADTO(juez);
     }
     @Override
     @Transactional
@@ -129,46 +83,11 @@ public class JuezServiceImpl implements JuezService {
         // El modelo rechaza cantidades negativas
         juez.actualizarAniosServicio(aniosServicio);
 
-        Juez actualizado = repositorio.save(juez);
+        Juez actualizado = guardar(juez);
 
-        return new JuezDTO(
-                actualizado.getId(),
-                actualizado.getNombreCompleto(),
-                actualizado.getClaveInterna(),
-                actualizado.getAniosServicio());
+        return convertirADTO(actualizado);
     }
-    @Override
-    @Transactional
-    public JuezDTO actualizarNombre(int id, String nombreCompleto) {
 
-        if (id <= 0) {
-            throw new DatosInvalidosException(
-                    "El identificador del juez debe ser positivo.");
-        }
-
-        // Comprueba el límite de la columna del nombre
-        if (nombreCompleto != null
-                && nombreCompleto.trim().length() > 255) {
-            throw new DatosInvalidosException(
-                    "El nombre completo no debe superar 255 caracteres.");
-        }
-
-        // Busca el juez que se quiere actualizar
-        Juez juez = repositorio.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "No existe un juez con el identificador " + id + "."));
-
-        // El método heredado de Persona valida y corrige el nombre
-        juez.cambiarNombre(nombreCompleto);
-
-        Juez actualizado = repositorio.save(juez);
-
-        return new JuezDTO(
-                actualizado.getId(),
-                actualizado.getNombreCompleto(),
-                actualizado.getClaveInterna(),
-                actualizado.getAniosServicio());
-    }
     @Override
     @Transactional
     public void eliminar(int id) {
@@ -198,41 +117,122 @@ public class JuezServiceImpl implements JuezService {
         repositorio.delete(juez);
     }
     
+
+
     @Override
     @Transactional
-    public JuezDTO actualizarDatos(
-            int id, String nombreCompleto, Integer aniosServicio) {
+    public JuezDTO registrar(RegistroJuezDTO datos) {
+
+        if (datos == null) {
+            throw new DatosInvalidosException(
+                    "Los datos del juez son obligatorios.");
+        }
+
+        if (datos.getClaveInterna() == null
+                || datos.getAniosServicio() == null) {
+
+            throw new DatosInvalidosException(
+                    "La clave interna y los años de servicio son obligatorios.");
+        }
+
+        Juez juez = new Juez(
+                datos.getNombre(),
+                datos.getApellido(),
+                datos.getDni(),
+                datos.getFechaNacimiento(),
+                datos.getMail(),
+                datos.getTelefono(),
+                datos.getClaveInterna(),
+                datos.getAniosServicio());
+
+        if (personaRepository.existsByDni(juez.getDni())) {
+            throw new RegistroDuplicadoException(
+                    "Ya existe una persona con ese DNI.");
+        }
+
+        if (repositorio.existsByClaveInterna(juez.getClaveInterna())) {
+            throw new RegistroDuplicadoException(
+                    "La clave interna ya pertenece a un juez.");
+        }
+
+        Juez guardado = guardar(juez);
+
+        return convertirADTO(guardado);
+    }
+
+    private JuezDTO convertirADTO(Juez juez) {
+        return new JuezDTO(
+                juez.getId(),
+                juez.getNombreCompleto(),
+                juez.getNombre(),
+                juez.getApellido(),
+                juez.getDni(),
+                juez.getFechaNacimiento(),
+                juez.calcularEdad(),
+                juez.getMail(),
+                juez.getTelefono(),
+                juez.getClaveInterna(),
+                juez.getAniosServicio());
+    }
+    @Override
+    @Transactional
+    public JuezDTO actualizarDatos(int id, RegistroJuezDTO datos) {
 
         if (id <= 0) {
             throw new DatosInvalidosException(
                     "El identificador del juez debe ser positivo.");
         }
 
-        if (aniosServicio == null) {
+        if (datos == null) {
             throw new DatosInvalidosException(
-                    "Los anios de servicio son obligatorios.");
+                    "Los datos del juez son obligatorios.");
         }
 
-        if (nombreCompleto != null
-                && nombreCompleto.trim().length() > 255) {
+        if (datos.getAniosServicio() == null
+                || datos.getAniosServicio() < 0) {
             throw new DatosInvalidosException(
-                    "El nombre completo no debe superar 255 caracteres.");
+                    "Los años de servicio son obligatorios y no pueden ser negativos.");
         }
 
         Juez juez = repositorio.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "No existe un juez con el identificador " + id + "."));
+                        "No existe un juez con el identificador "
+                        + id + "."));
 
-        // El modelo valida el nombre y los años de servicio
-        juez.cambiarNombre(nombreCompleto);
-        juez.actualizarAniosServicio(aniosServicio);
+        String dni = datos.getDni();
 
-        Juez actualizado = repositorio.save(juez);
+        if (dni != null
+                && personaRepository.existsByDniAndIdNot(dni.trim(), id)) {
+            throw new RegistroDuplicadoException(
+                    "Ya existe otra persona con ese DNI.");
+        }
 
-        return new JuezDTO(
-                actualizado.getId(),
-                actualizado.getNombreCompleto(),
-                actualizado.getClaveInterna(),
-                actualizado.getAniosServicio());
+        juez.actualizarDatosPersonales(
+                datos.getNombre(),
+                datos.getApellido(),
+                dni,
+                datos.getFechaNacimiento(),
+                datos.getMail(),
+                datos.getTelefono());
+
+        juez.actualizarAniosServicio(datos.getAniosServicio());
+
+        Juez actualizado = guardar(juez);
+
+        return convertirADTO(actualizado);
+    }
+    private Juez guardar(Juez persona) {
+        try {
+            return repositorio.saveAndFlush(persona);
+        } catch (DataIntegrityViolationException excepcion) {
+            Throwable causa = excepcion;
+            while (causa != null) {
+                if (causa instanceof SQLException sql && sql.getErrorCode() == 1062) {
+                    throw new RegistroDuplicadoException("Ya existe una persona con ese DNI o un juez con esa clave interna.");
+                }
+                causa = causa.getCause();
+            }
+            throw excepcion;
+        }
     }
 }

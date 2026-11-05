@@ -8,12 +8,17 @@ import com.policiaciudad.repository.UsuarioRepository;
 import com.policiaciudad.repository.VigilanteRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.dao.DataIntegrityViolationException;
+import java.sql.SQLException;
 import org.springframework.transaction.annotation.Transactional;
 import com.policiaciudad.exception.DatosInvalidosException;
 import com.policiaciudad.exception.RecursoNoEncontradoException;
 import java.util.List;
 import com.policiaciudad.exception.RecursoEnUsoException;
 import com.policiaciudad.repository.ContratacionRepository;
+import com.policiaciudad.repository.PersonaRepository;
+import com.policiaciudad.dto.RegistroVigilanteDTO;
+import com.policiaciudad.exception.RegistroDuplicadoException;
 
 @Service // Spring registra el servicio e inyecta sus dependencias
 public class VigilanteServiceImpl implements VigilanteService { //Implementa el contrato
@@ -21,16 +26,19 @@ public class VigilanteServiceImpl implements VigilanteService { //Implementa el 
     private final UsuarioRepository usuarioRepository;
     private final VigilanteRepository vigilanteRepository;
     private final ContratacionRepository contratacionRepository;
+    private final PersonaRepository personaRepository;
     
 // Recibe los repositorios mediante el constructor
     public VigilanteServiceImpl(
             UsuarioRepository usuarioRepository,
             VigilanteRepository vigilanteRepository,
-            ContratacionRepository contratacionRepository) {
+            ContratacionRepository contratacionRepository,
+            PersonaRepository personaRepository) {
 
         this.usuarioRepository = usuarioRepository;
         this.vigilanteRepository = vigilanteRepository;
         this.contratacionRepository = contratacionRepository;
+        this.personaRepository = personaRepository;
     }
 //Comprueba la cuenta y el rol.
     @Override
@@ -58,47 +66,17 @@ public class VigilanteServiceImpl implements VigilanteService { //Implementa el 
                 ));
 
         // Devuelve únicamente los datos personales definidos en el DTO
-        return new VigilanteDTO(
-                vigilante.getId(),
-                vigilante.getNombreCompleto(),
-                vigilante.getEdad()
-        );
+        return convertirADTO(vigilante);
     }
 //findById, heredado de JpaRepository, obtiene al vigilante mediante usuario.getIdPersona().
 //Devuelve el identificador y el nombre heredados de Persona, junto con la edad propia de Vigilante
-    @Override
-    @Transactional // Guarda Persona y Vigilante en una misma transacción
-    public VigilanteDTO registrar(String nombreCompleto, Integer edad) {
 
-        // Valida la presencia del dato antes de convertirlo a int
-        if (edad == null) {
-            throw new DatosInvalidosException(
-                    "La edad del vigilante es obligatoria."
-            );
-        }
 
-        // El modelo valida el nombre y rechaza edades negativas
-        Vigilante vigilante = new Vigilante(nombreCompleto, edad);
-
-        // JPA guarda ambas tablas mediante JOINED
-        Vigilante guardado = vigilanteRepository.save(vigilante);
-
-        return new VigilanteDTO(
-                guardado.getId(),
-                guardado.getNombreCompleto(),
-                guardado.getEdad()
-        );
-    }
     @Override
     @Transactional(readOnly = true)
     public List<VigilanteDTO> listar() {
-
-        // Convierte los vigilantes guardados en datos de respuesta
         return vigilanteRepository.findAll().stream()
-                .map(vigilante -> new VigilanteDTO(
-                        vigilante.getId(),
-                        vigilante.getNombreCompleto(),
-                        vigilante.getEdad()))
+                .map(this::convertirADTO)
                 .toList();
     }
     @Override
@@ -116,74 +94,10 @@ public class VigilanteServiceImpl implements VigilanteService { //Implementa el 
                         "No existe un vigilante con el identificador "
                         + id + "."));
 
-        return new VigilanteDTO(
-                vigilante.getId(),
-                vigilante.getNombreCompleto(),
-                vigilante.getEdad());
+     return convertirADTO(vigilante);
     }
-    @Override
-    @Transactional
-    public VigilanteDTO actualizarEdad(int id, Integer edad) {
 
-        // Valida el identificador y la presencia de la edad
-        if (id <= 0) {
-            throw new DatosInvalidosException(
-                    "El identificador del vigilante debe ser positivo.");
-        }
 
-        if (edad == null) {
-            throw new DatosInvalidosException(
-                    "La edad del vigilante es obligatoria.");
-        }
-
-        // Busca el vigilante que se quiere actualizar
-        Vigilante vigilante = vigilanteRepository.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "No existe un vigilante con el identificador "
-                        + id + "."));
-
-        // El modelo rechaza edades negativas
-        vigilante.actualizarEdad(edad);
-
-        Vigilante actualizado = vigilanteRepository.save(vigilante);
-
-        return new VigilanteDTO(
-                actualizado.getId(),
-                actualizado.getNombreCompleto(),
-                actualizado.getEdad());
-    }
-    @Override
-    @Transactional
-    public VigilanteDTO actualizarNombre(int id, String nombreCompleto) {
-
-        if (id <= 0) {
-            throw new DatosInvalidosException(
-                    "El identificador del vigilante debe ser positivo.");
-        }
-
-        // Comprueba el límite de la columna del nombre
-        if (nombreCompleto != null
-                && nombreCompleto.trim().length() > 255) {
-            throw new DatosInvalidosException(
-                    "El nombre completo no debe superar 255 caracteres.");
-        }
-
-        // Busca el vigilante que se quiere actualizar
-        Vigilante vigilante = vigilanteRepository.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "No existe un vigilante con el identificador "
-                        + id + "."));
-
-        // El método heredado de Persona valida y corrige el nombre
-        vigilante.cambiarNombre(nombreCompleto);
-
-        Vigilante actualizado = vigilanteRepository.save(vigilante);
-
-        return new VigilanteDTO(
-                actualizado.getId(),
-                actualizado.getNombreCompleto(),
-                actualizado.getEdad());
-    }
     @Override
     @Transactional
     public void eliminar(int id) {
@@ -213,25 +127,59 @@ public class VigilanteServiceImpl implements VigilanteService { //Implementa el 
 
         vigilanteRepository.delete(vigilante);
     }
+
+    @Override
+    @Transactional
+    public VigilanteDTO registrar(RegistroVigilanteDTO datos) {
+
+        if (datos == null) {
+            throw new DatosInvalidosException(
+                    "Los datos del vigilante son obligatorios.");
+        }
+
+        Vigilante vigilante = new Vigilante(
+                datos.getNombre(),
+                datos.getApellido(),
+                datos.getDni(),
+                datos.getFechaNacimiento(),
+                datos.getMail(),
+                datos.getTelefono());
+
+        if (personaRepository.existsByDni(vigilante.getDni())) {
+            throw new RegistroDuplicadoException(
+                    "Ya existe una persona con ese DNI.");
+        }
+
+        Vigilante guardado = guardar(vigilante);
+
+        return convertirADTO(guardado);
+    }
+    //Este método concentra la conversión para reutilizarla en las distintas operaciones
+    private VigilanteDTO convertirADTO(Vigilante vigilante) {
+        return new VigilanteDTO(
+                vigilante.getId(),
+                vigilante.getNombreCompleto(),
+                vigilante.getNombre(),
+                vigilante.getApellido(),
+                vigilante.getDni(),
+                vigilante.getFechaNacimiento(),
+                vigilante.calcularEdad(),
+                vigilante.getMail(),
+                vigilante.getTelefono());
+    }
     @Override
     @Transactional
     public VigilanteDTO actualizarDatos(
-            int id, String nombreCompleto, Integer edad) {
+            int id, RegistroVigilanteDTO datos) {
 
         if (id <= 0) {
             throw new DatosInvalidosException(
                     "El identificador del vigilante debe ser positivo.");
         }
 
-        if (edad == null) {
+        if (datos == null) {
             throw new DatosInvalidosException(
-                    "La edad es obligatoria.");
-        }
-
-        if (nombreCompleto != null
-                && nombreCompleto.trim().length() > 255) {
-            throw new DatosInvalidosException(
-                    "El nombre completo no debe superar 255 caracteres.");
+                    "Los datos del vigilante son obligatorios.");
         }
 
         Vigilante vigilante = vigilanteRepository.findById(id)
@@ -239,15 +187,39 @@ public class VigilanteServiceImpl implements VigilanteService { //Implementa el 
                         "No existe un vigilante con el identificador "
                         + id + "."));
 
-        // El modelo valida ambos datos
-        vigilante.cambiarNombre(nombreCompleto);
-        vigilante.actualizarEdad(edad);
+        String dni = datos.getDni();
 
-        Vigilante actualizado = vigilanteRepository.save(vigilante);
+        if (dni != null
+                && personaRepository.existsByDniAndIdNot(dni.trim(), id)) {
 
-        return new VigilanteDTO(
-                actualizado.getId(),
-                actualizado.getNombreCompleto(),
-                actualizado.getEdad());
+            throw new RegistroDuplicadoException(
+                    "Ya existe otra persona con ese DNI.");
+        }
+
+        vigilante.actualizarDatosPersonales(
+                datos.getNombre(),
+                datos.getApellido(),
+                dni,
+                datos.getFechaNacimiento(),
+                datos.getMail(),
+                datos.getTelefono());
+
+        Vigilante actualizado = guardar(vigilante);
+
+        return convertirADTO(actualizado);
+    }
+    private Vigilante guardar(Vigilante persona) {
+        try {
+            return vigilanteRepository.saveAndFlush(persona);
+        } catch (DataIntegrityViolationException excepcion) {
+            Throwable causa = excepcion;
+            while (causa != null) {
+                if (causa instanceof SQLException sql && sql.getErrorCode() == 1062) {
+                    throw new RegistroDuplicadoException("Ya existe una persona con ese DNI.");
+                }
+                causa = causa.getCause();
+            }
+            throw excepcion;
+        }
     }
 }

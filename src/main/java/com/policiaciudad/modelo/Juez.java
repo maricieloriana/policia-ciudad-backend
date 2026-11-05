@@ -4,6 +4,7 @@ import com.policiaciudad.exception.DatosInvalidosException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 
 @Entity // Permite guardar jueces mediante JPA
 @Table(name = "jueces") // Tabla con los datos propios del juez
@@ -33,6 +34,7 @@ public class Juez extends Persona {
         this.claveInterna = claveInterna;
         actualizarAniosServicio(aniosServicio);
     }
+    
 
     public int getClaveInterna() {
         return claveInterna;
@@ -50,5 +52,25 @@ public class Juez extends Persona {
         }
 
         this.aniosServicio = anios;
+    }
+    public Juez(
+            String nombre,
+            String apellido,
+            String dni,
+            LocalDate fechaNacimiento,
+            String mail,
+            String telefono,
+            int claveInterna,
+            int aniosServicio) {
+
+        this(nombre + " " + apellido, claveInterna, aniosServicio);
+
+        actualizarDatosPersonales(
+                nombre,
+                apellido,
+                dni,
+                fechaNacimiento,
+                mail,
+                telefono);
     }
 }

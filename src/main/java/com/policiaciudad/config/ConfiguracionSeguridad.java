@@ -142,9 +142,6 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.PATCH, "/api/bandas/{numero}")
                         .hasRole("ADMINISTRADOR")
                         
-                        .requestMatchers(HttpMethod.PATCH, "/api/vigilantes/{id}/edad")
-                        .hasRole("ADMINISTRADOR")
-                        
                         .requestMatchers(HttpMethod.PATCH, "/api/jueces/{id}/anios-servicio")
                         .hasRole("ADMINISTRADOR")
                         

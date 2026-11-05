@@ -31,13 +31,57 @@
               method="post">
 
             <div>
-                <label for="nombreCompleto">Nombre completo</label>
+                <label for="nombre">Nombre</label>
                 <input type="text"
-                       id="nombreCompleto"
-                       th:field="*{nombreCompleto}"
-                       maxlength="255"
+                       th:field="*{nombre}"
+                       maxlength="100"
                        required>
             </div>
+
+            <div>
+                <label for="apellido">Apellido</label>
+                <input type="text"
+                       th:field="*{apellido}"
+                       maxlength="100"
+                       required>
+            </div>
+
+            <div>
+                <label for="dni">DNI</label>
+                <input type="text"
+                       th:field="*{dni}"
+                       inputmode="numeric"
+                       pattern="[0-9]{8}"
+                       minlength="8"
+                       maxlength="8"
+                       title="Ingresá exactamente 8 dígitos, sin puntos."
+                       required>
+            </div>
+
+            <div>
+                <label for="fechaNacimiento">Fecha de nacimiento</label>
+                <input type="date"
+                       th:field="*{fechaNacimiento}"
+                       required>
+            </div>
+
+            <div>
+                <label for="mail">Mail</label>
+                <input type="email"
+                       th:field="*{mail}"
+                       maxlength="254"
+                       required>
+            </div>
+
+            <div>
+                <label for="telefono">Teléfono</label>
+                <input type="tel"
+                       th:field="*{telefono}"
+                       maxlength="30"
+                       required>
+            </div>
+
+            <p>La edad se calcula automáticamente desde la fecha de nacimiento.</p>
 
             <div>
                 <label for="aniosServicio">Años de servicio</label>

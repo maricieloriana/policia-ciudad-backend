@@ -51,7 +51,11 @@
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">Nombre completo</th>
+                    <th scope="col">DNI</th>
+                    <th scope="col">Nacimiento</th>
                     <th scope="col">Edad</th>
+                    <th scope="col">Mail</th>
+                    <th scope="col">Teléfono</th>
                     <th scope="col" th:if="${esAdministrador}">Acciones</th>
                 </tr>
             </thead>
@@ -59,9 +63,22 @@
             <tbody>
                 <!-- Genera una fila por cada vigilante -->
                 <tr th:each="vigilante : ${vigilantes}">
-                    <td th:text="${vigilante.id}">1</td>
-                    <td th:text="${vigilante.nombreCompleto}">Nombre</td>
-                    <td th:text="${vigilante.edad}">30</td>
+                    <td th:text="${vigilante.id}"></td>
+
+                    <td th:text="${vigilante.nombreCompleto}"></td>
+
+                    <td th:text="${vigilante.dni ?: 'Sin informar'}"></td>
+
+                    <td th:text="${vigilante.fechaNacimiento != null
+                        ? #temporals.format(vigilante.fechaNacimiento, 'dd/MM/yyyy')
+                        : 'Sin informar'}"></td>
+
+                    <td th:text="${vigilante.edad != null
+                        ? vigilante.edad : 'Sin informar'}"></td>
+
+                    <td th:text="${vigilante.mail ?: 'Sin informar'}"></td>
+
+                    <td th:text="${vigilante.telefono ?: 'Sin informar'}"></td>
                     <td class="acciones-celda" th:if="${esAdministrador}">
                         <div class="acciones">
                         <a class="boton" th:href="@{/vigilantes/{id}/editar(id=${vigilante.id})}">

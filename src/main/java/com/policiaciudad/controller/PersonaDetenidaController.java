@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.policiaciudad.dto.ActualizarBandaPersonaDetenidaDTO;
 import org.springframework.web.bind.annotation.PutMapping;
-import com.policiaciudad.dto.ActualizarNombreDTO;
 import org.springframework.web.bind.annotation.PatchMapping;
 
 @RestController // Recibe solicitudes y devuelve respuestas JSON
@@ -32,10 +31,7 @@ public class PersonaDetenidaController {
             @RequestBody RegistroPersonaDetenidaDTO datos) {
 
         // Delega las validaciones y el guardado al servicio
-        PersonaDetenidaDTO registrada = servicio.registrar(
-                datos.getNombreCompleto(),
-                datos.getNumeroBanda()
-        );
+      PersonaDetenidaDTO registrada = servicio.registrar(datos);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -60,11 +56,10 @@ public class PersonaDetenidaController {
         return servicio.actualizarBanda(id, datos.getNumeroBanda());
     }
     @PatchMapping("/{id}/nombre")
-    public PersonaDetenidaDTO actualizarNombre(
+    public PersonaDetenidaDTO actualizarDatos(
             @PathVariable int id,
-            @RequestBody ActualizarNombreDTO datos) {
+            @RequestBody RegistroPersonaDetenidaDTO datos) {
 
-        // Delega la corrección del nombre al servicio
-        return servicio.actualizarNombre(id, datos.getNombreCompleto());
+        return servicio.actualizarDatos(id, datos);
     }
 }

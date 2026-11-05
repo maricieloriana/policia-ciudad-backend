@@ -4,6 +4,7 @@ import com.policiaciudad.exception.DatosInvalidosException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 
 @Entity // Permite guardar personas detenidas mediante JPA
 @Table(name = "personas_detenidas") // Tabla con sus datos propios
@@ -36,5 +37,24 @@ public class PersonaDetenida extends Persona {
 
     public void quitarBanda() { // Elimina la vinculación
         this.numeroBanda = null;
+    }
+    
+    public PersonaDetenida(
+            String nombre,
+            String apellido,
+            String dni,
+            LocalDate fechaNacimiento,
+            String mail,
+            String telefono) {
+
+        super();
+
+        actualizarDatosPersonales(
+                nombre,
+                apellido,
+                dni,
+                fechaNacimiento,
+                mail,
+                telefono);
     }
 }

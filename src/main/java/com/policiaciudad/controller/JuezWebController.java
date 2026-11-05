@@ -58,16 +58,13 @@ public class JuezWebController {
         if (resultado.hasErrors()) {
             modelo.addAttribute(
                     "mensajeError",
-                    "Revisá el nombre, la clave y los años de servicio.");
+                    "Revisá los datos personales, la fecha, la clave y los años de servicio.");
 
             return "juez-formulario";
         }
 
         try {
-            servicio.registrar(
-                    datos.getNombreCompleto(),
-                    datos.getClaveInterna(),
-                    datos.getAniosServicio());
+            servicio.registrar(datos);
 
             mensajes.addFlashAttribute(
                     "mensajeExito", "Juez registrado correctamente.");
@@ -111,7 +108,13 @@ public class JuezWebController {
         JuezDTO actual = servicio.consultarPorId(id);
 
         RegistroJuezDTO datos = new RegistroJuezDTO();
-        datos.setNombreCompleto(actual.getNombreCompleto());
+        datos.setNombre(actual.getNombre());
+        datos.setApellido(actual.getApellido());
+        datos.setDni(actual.getDni());
+        datos.setFechaNacimiento(actual.getFechaNacimiento());
+        datos.setMail(actual.getMail());
+        datos.setTelefono(actual.getTelefono());
+        datos.setClaveInterna(actual.getClaveInterna());
         datos.setAniosServicio(actual.getAniosServicio());
 
         modelo.addAttribute("juez", datos);
@@ -133,26 +136,28 @@ public class JuezWebController {
         if (resultado.hasErrors()) {
             modelo.addAttribute(
                     "mensajeError",
-                    "Revisá el nombre y los años de servicio.");
+                    "Revisá los datos personales, la fecha y los años de servicio.");
 
             return "juez-edicion";
         }
 
         try {
-            servicio.actualizarDatos(
-                    id,
-                    datos.getNombreCompleto(),
-                    datos.getAniosServicio());
+            servicio.actualizarDatos(id, datos);
 
             mensajes.addFlashAttribute(
-                    "mensajeExito", "Juez actualizado correctamente.");
+                    "mensajeExito",
+                    "Juez actualizado correctamente.");
 
             return "redirect:/jueces";
 
         } catch (DatosInvalidosException
+                | RegistroDuplicadoException
                 | RecursoNoEncontradoException excepcion) {
 
-            modelo.addAttribute("mensajeError", excepcion.getMessage());
+            modelo.addAttribute(
+                    "mensajeError",
+                    excepcion.getMessage());
+
             return "juez-edicion";
         }
     }

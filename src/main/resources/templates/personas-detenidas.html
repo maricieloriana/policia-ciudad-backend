@@ -48,6 +48,11 @@
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">Nombre completo</th>
+                    <th scope="col">DNI</th>
+                    <th scope="col">Nacimiento</th>
+                    <th scope="col">Edad</th>
+                    <th scope="col">Mail</th>
+                    <th scope="col">Teléfono</th>
                     <th scope="col">Banda</th>
                     <th scope="col" th:if="${esAdministrador}">Acciones</th>
                 </tr>
@@ -55,13 +60,22 @@
 
             <tbody>
                 <tr th:each="persona : ${personasDetenidas}">
-                    <td th:text="${persona.id}">1</td>
-                    <td th:text="${persona.nombreCompleto}">Nombre</td>
+                    <td th:text="${persona.id}"></td>
+                    <td th:text="${persona.nombreCompleto}"></td>
+                    <td th:text="${persona.dni ?: 'Sin informar'}"></td>
+
+                    <td th:text="${persona.fechaNacimiento != null
+                        ? #temporals.format(persona.fechaNacimiento, 'dd/MM/yyyy')
+                        : 'Sin informar'}"></td>
+
+                    <td th:text="${persona.edad != null
+                        ? persona.edad : 'Sin informar'}"></td>
+
+                    <td th:text="${persona.mail ?: 'Sin informar'}"></td>
+                    <td th:text="${persona.telefono ?: 'Sin informar'}"></td>
 
                     <td th:text="${persona.numeroBanda != null
-                        ? persona.numeroBanda : 'Sin banda'}">
-                        Sin banda
-                    </td>
+                        ? persona.numeroBanda : 'Sin banda'}"></td>
 
                     <td class="acciones-celda" th:if="${esAdministrador}">
                         <div class="acciones">

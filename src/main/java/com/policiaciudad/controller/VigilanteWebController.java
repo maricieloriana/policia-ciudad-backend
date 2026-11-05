@@ -15,6 +15,7 @@ import com.policiaciudad.dto.VigilanteDTO;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.policiaciudad.exception.RecursoEnUsoException;
 import com.policiaciudad.exception.RecursoNoEncontradoException;
+import com.policiaciudad.exception.RegistroDuplicadoException;
 
 @Controller
 public class VigilanteWebController {
@@ -48,52 +49,58 @@ public class VigilanteWebController {
 
         return "vigilante-formulario";
     }
-    
+
     @PostMapping("/vigilantes")
-    public String registrar(
+    public String registrar( //recibe los campos del formulario web
             @ModelAttribute("vigilante") RegistroVigilanteDTO datos,
-            BindingResult resultado,
+            BindingResult resultado, //permite detectar errores de conversion
             Model modelo,
             RedirectAttributes mensajes) {
 
-        // Detecta errores al convertir los campos del formulario
         if (resultado.hasErrors()) {
             modelo.addAttribute(
-                    "mensajeError", "Revisa el nombre y la edad ingresados.");
+                    "mensajeError",
+                    "Revisá los datos ingresados y el formato de la fecha.");
+
             return "vigilante-formulario";
         }
 
         try {
-            // Reutiliza las validaciones y el guardado del servicio
-            servicio.registrar(datos.getNombreCompleto(), datos.getEdad());
+            servicio.registrar(datos);
 
             mensajes.addFlashAttribute(
-                    "mensajeExito", "Vigilante registrado correctamente.");
+                    "mensajeExito",
+                    "Vigilante registrado correctamente.");
 
-            // Redirige para evitar repetir el registro al actualizar la página
             return "redirect:/vigilantes";
 
-        } catch (DatosInvalidosException excepcion) {
-            modelo.addAttribute("mensajeError", excepcion.getMessage());
+        } catch (DatosInvalidosException
+                | RegistroDuplicadoException excepcion) {
+
+            modelo.addAttribute(
+                    "mensajeError",
+                    excepcion.getMessage());
+
             return "vigilante-formulario";
         }
     }
-    
+    //Este método consulta al vigilante y carga sus datos en el DTO que utiliza el formulario
     @GetMapping("/vigilantes/{id}/editar")
     public String mostrarEdicion(@PathVariable int id, Model modelo) {
 
-        // Consulta los datos actuales del vigilante
         VigilanteDTO actual = servicio.consultarPorId(id);
 
-        // Carga esos datos en el objeto del formulario
         RegistroVigilanteDTO datos = new RegistroVigilanteDTO();
-        datos.setNombreCompleto(actual.getNombreCompleto());
-        datos.setEdad(actual.getEdad());
+        datos.setNombre(actual.getNombre());
+        datos.setApellido(actual.getApellido());
+        datos.setDni(actual.getDni());
+        datos.setFechaNacimiento(actual.getFechaNacimiento());
+        datos.setMail(actual.getMail());
+        datos.setTelefono(actual.getTelefono());
 
         modelo.addAttribute("vigilante", datos);
         modelo.addAttribute("idVigilante", id);
 
-        // Reutiliza la plantilla de registro
         return "vigilante-formulario";
     }
     
@@ -105,29 +112,30 @@ public class VigilanteWebController {
             Model modelo,
             RedirectAttributes mensajes) {
 
-        // Conserva el modo de edición si hay errores
         modelo.addAttribute("idVigilante", id);
 
         if (resultado.hasErrors()) {
             modelo.addAttribute(
-                    "mensajeError", "Revisa el nombre y la edad ingresados.");
+                    "mensajeError",
+                    "Revisá los datos ingresados y el formato de la fecha.");
+
             return "vigilante-formulario";
         }
 
         try {
-            // Guarda ambos datos dentro de una misma transacción
-            servicio.actualizarDatos(
-                    id,
-                    datos.getNombreCompleto(),
-                    datos.getEdad());
+            servicio.actualizarDatos(id, datos);
 
             mensajes.addFlashAttribute(
-                    "mensajeExito", "Vigilante actualizado correctamente.");
+                    "mensajeExito",
+                    "Vigilante actualizado correctamente.");
 
             return "redirect:/vigilantes";
 
-        } catch (DatosInvalidosException excepcion) {
+        } catch (DatosInvalidosException
+                | RegistroDuplicadoException excepcion) {
+
             modelo.addAttribute("mensajeError", excepcion.getMessage());
+
             return "vigilante-formulario";
         }
     }

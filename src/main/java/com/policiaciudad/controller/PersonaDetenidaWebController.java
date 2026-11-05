@@ -17,6 +17,7 @@ import com.policiaciudad.dto.PersonaDetenidaDTO;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.policiaciudad.dto.ActualizarNombreDTO;
 import com.policiaciudad.exception.RecursoEnUsoException;
+import com.policiaciudad.exception.RegistroDuplicadoException;
 
 @Controller
 public class PersonaDetenidaWebController {
@@ -66,14 +67,15 @@ public class PersonaDetenidaWebController {
 
         if (resultado.hasErrors()) {
             modelo.addAttribute(
-                    "mensajeError", "Revisá el nombre y la banda seleccionada.");
+                    "mensajeError",
+                    "Revisá los datos personales, la fecha y la banda.");
             modelo.addAttribute("bandas", bandaService.listar());
+
             return "persona-detenida-formulario";
         }
 
         try {
-            servicio.registrar(
-                    datos.getNombreCompleto(), datos.getNumeroBanda());
+            servicio.registrar(datos);
 
             mensajes.addFlashAttribute(
                     "mensajeExito",
@@ -82,14 +84,15 @@ public class PersonaDetenidaWebController {
             return "redirect:/personas-detenidas";
 
         } catch (DatosInvalidosException
+                | RegistroDuplicadoException
                 | RecursoNoEncontradoException excepcion) {
 
             modelo.addAttribute("mensajeError", excepcion.getMessage());
             modelo.addAttribute("bandas", bandaService.listar());
+
             return "persona-detenida-formulario";
         }
     }
-    
         @GetMapping("/personas-detenidas/{id}/banda")
     public String mostrarCambioBanda(
             @PathVariable int id, Model modelo) {
@@ -143,14 +146,21 @@ public class PersonaDetenidaWebController {
         }
     }
     
-        @GetMapping("/personas-detenidas/{id}/nombre")
+    @GetMapping("/personas-detenidas/{id}/nombre")
     public String mostrarCambioNombre(
             @PathVariable int id, Model modelo) {
 
         PersonaDetenidaDTO actual = servicio.consultarPorId(id);
 
-        ActualizarNombreDTO datos = new ActualizarNombreDTO();
-        datos.setNombreCompleto(actual.getNombreCompleto());
+        RegistroPersonaDetenidaDTO datos
+                = new RegistroPersonaDetenidaDTO();
+
+        datos.setNombre(actual.getNombre());
+        datos.setApellido(actual.getApellido());
+        datos.setDni(actual.getDni());
+        datos.setFechaNacimiento(actual.getFechaNacimiento());
+        datos.setMail(actual.getMail());
+        datos.setTelefono(actual.getTelefono());
 
         modelo.addAttribute("persona", datos);
         modelo.addAttribute("idPersona", id);
@@ -161,25 +171,36 @@ public class PersonaDetenidaWebController {
     @PostMapping("/personas-detenidas/{id}/nombre")
     public String actualizarNombre(
             @PathVariable int id,
-            @ModelAttribute("persona") ActualizarNombreDTO datos,
+            @ModelAttribute("persona") RegistroPersonaDetenidaDTO datos,
+            BindingResult resultado,
             Model modelo,
             RedirectAttributes mensajes) {
 
         modelo.addAttribute("idPersona", id);
 
+        if (resultado.hasErrors()) {
+            modelo.addAttribute(
+                    "mensajeError",
+                    "Revisá los datos personales y el formato de la fecha.");
+
+            return "persona-detenida-nombre";
+        }
+
         try {
-            servicio.actualizarNombre(id, datos.getNombreCompleto());
+            servicio.actualizarDatos(id, datos);
 
             mensajes.addFlashAttribute(
                     "mensajeExito",
-                    "Nombre actualizado correctamente.");
+                    "Datos personales actualizados correctamente.");
 
             return "redirect:/personas-detenidas";
 
         } catch (DatosInvalidosException
+                | RegistroDuplicadoException
                 | RecursoNoEncontradoException excepcion) {
 
             modelo.addAttribute("mensajeError", excepcion.getMessage());
+
             return "persona-detenida-nombre";
         }
     }

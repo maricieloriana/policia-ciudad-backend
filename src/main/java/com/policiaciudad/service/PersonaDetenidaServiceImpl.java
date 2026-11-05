@@ -7,12 +7,17 @@ import com.policiaciudad.modelo.PersonaDetenida;
 import com.policiaciudad.repository.BandaRepository;
 import com.policiaciudad.repository.PersonaDetenidaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.dao.DataIntegrityViolationException;
+import java.sql.SQLException;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import com.policiaciudad.exception.RecursoEnUsoException;
 import com.policiaciudad.repository.AsaltoRepository;
 import com.policiaciudad.repository.JuicioRepository;
 import com.policiaciudad.repository.UsuarioRepository;
+import com.policiaciudad.dto.RegistroPersonaDetenidaDTO;
+import com.policiaciudad.exception.RegistroDuplicadoException;
+import com.policiaciudad.repository.PersonaRepository;
 
 @Service // Spring registra el servicio
 public class PersonaDetenidaServiceImpl
@@ -23,69 +28,30 @@ public class PersonaDetenidaServiceImpl
     private final AsaltoRepository asaltoRepository;
     private final JuicioRepository juicioRepository;
     private final UsuarioRepository usuarioRepository;
+    private final PersonaRepository personaRepository;
 
     public PersonaDetenidaServiceImpl(
             PersonaDetenidaRepository repositorio,
             BandaRepository bandaRepository,
             AsaltoRepository asaltoRepository,
             JuicioRepository juicioRepository,
-            UsuarioRepository usuarioRepository) {
+            UsuarioRepository usuarioRepository,
+            PersonaRepository personaRepository) {
 
         this.repositorio = repositorio;
         this.bandaRepository = bandaRepository;
         this.asaltoRepository = asaltoRepository;
         this.juicioRepository = juicioRepository;
         this.usuarioRepository = usuarioRepository;
+        this.personaRepository = personaRepository;
     }
 
-    @Override
-    @Transactional // Guarda Persona y PersonaDetenida juntas
-    public PersonaDetenidaDTO registrar(
-            String nombreCompleto, Integer numeroBanda) {
 
-        // Comprueba el límite de la columna del nombre
-        if (nombreCompleto != null
-                && nombreCompleto.trim().length() > 255) {
-
-            throw new DatosInvalidosException(
-                    "El nombre completo no debe superar 255 caracteres."
-            );
-        }
-
-        // El constructor heredado valida el nombre
-        PersonaDetenida detenida = new PersonaDetenida(nombreCompleto);
-
-        // Solo comprueba la banda cuando se informa
-        if (numeroBanda != null) {
-
-            // El modelo valida que el número sea positivo
-            detenida.asignarBanda(numeroBanda);
-
-            if (!bandaRepository.existsById(numeroBanda)) {
-                throw new RecursoNoEncontradoException(
-                        "La banda indicada no existe."
-                );
-            }
-        }
-
-        PersonaDetenida guardada = repositorio.save(detenida);
-
-        return new PersonaDetenidaDTO(
-                guardada.getId(),
-                guardada.getNombreCompleto(),
-                guardada.getNumeroBanda()
-        );
-    }
     @Override
     @Transactional(readOnly = true)
     public List<PersonaDetenidaDTO> listar() {
-
-        // Convierte los registros guardados en datos de respuesta
         return repositorio.findAll().stream()
-                .map(persona -> new PersonaDetenidaDTO(
-                        persona.getId(),
-                        persona.getNombreCompleto(),
-                        persona.getNumeroBanda()))
+                .map(PersonaDetenidaDTO::new)
                 .toList();
     }
     @Override
@@ -103,10 +69,7 @@ public class PersonaDetenidaServiceImpl
                         "No existe una persona detenida con el identificador "
                         + id + "."));
 
-        return new PersonaDetenidaDTO(
-                persona.getId(),
-                persona.getNombreCompleto(),
-                persona.getNumeroBanda());
+        return new PersonaDetenidaDTO(persona);
     }
     @Override
     @Transactional
@@ -144,45 +107,11 @@ public class PersonaDetenidaServiceImpl
             persona.asignarBanda(numeroBanda);
         }
 
-        PersonaDetenida actualizada = repositorio.save(persona);
+        PersonaDetenida actualizada = guardar(persona);
 
-        return new PersonaDetenidaDTO(
-                actualizada.getId(),
-                actualizada.getNombreCompleto(),
-                actualizada.getNumeroBanda());
+        return new PersonaDetenidaDTO(actualizada);
     }
-    @Override
-    @Transactional
-    public PersonaDetenidaDTO actualizarNombre(int id, String nombreCompleto) {
 
-        if (id <= 0) {
-            throw new DatosInvalidosException(
-                    "El identificador de la persona detenida debe ser positivo.");
-        }
-
-        // Comprueba el límite de la columna del nombre
-        if (nombreCompleto != null
-                && nombreCompleto.trim().length() > 255) {
-            throw new DatosInvalidosException(
-                    "El nombre completo no debe superar 255 caracteres.");
-        }
-
-        // Busca la persona detenida que se quiere actualizar
-        PersonaDetenida persona = repositorio.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "No existe una persona detenida con el identificador "
-                        + id + "."));
-
-        // El método heredado de Persona valida y corrige el nombre
-        persona.cambiarNombre(nombreCompleto);
-
-        PersonaDetenida actualizada = repositorio.save(persona);
-
-        return new PersonaDetenidaDTO(
-                actualizada.getId(),
-                actualizada.getNombreCompleto(),
-                actualizada.getNumeroBanda());
-    }
     @Override
     @Transactional
     public void eliminar(int id) {
@@ -210,5 +139,92 @@ public class PersonaDetenidaServiceImpl
         }
 
         repositorio.delete(persona);
+    }
+    
+    @Override
+    @Transactional
+    public PersonaDetenidaDTO registrar(RegistroPersonaDetenidaDTO datos) {
+
+        if (datos == null) {
+            throw new DatosInvalidosException(
+                    "Los datos de la persona son obligatorios.");
+        }
+
+        PersonaDetenida persona = new PersonaDetenida(
+                datos.getNombre(),
+                datos.getApellido(),
+                datos.getDni(),
+                datos.getFechaNacimiento(),
+                datos.getMail(),
+                datos.getTelefono());
+
+        if (personaRepository.existsByDni(persona.getDni())) {
+            throw new RegistroDuplicadoException(
+                    "Ya existe una persona con ese DNI.");
+        }
+
+        Integer numeroBanda = datos.getNumeroBanda();
+
+        if (numeroBanda != null) {
+            persona.asignarBanda(numeroBanda);
+
+            if (!bandaRepository.existsById(numeroBanda)) {
+                throw new RecursoNoEncontradoException(
+                        "La banda indicada no existe.");
+            }
+        }
+
+        PersonaDetenida guardada = guardar(persona);
+
+        return new PersonaDetenidaDTO(guardada);
+    }
+    @Override
+    @Transactional
+    public PersonaDetenidaDTO actualizarDatos(
+            int id, RegistroPersonaDetenidaDTO datos) {
+
+        if (id <= 0 || datos == null) {
+            throw new DatosInvalidosException(
+                    "El identificador y los datos de la persona son obligatorios.");
+        }
+
+        PersonaDetenida persona = repositorio.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "No existe una persona detenida con el identificador "
+                        + id + "."));
+
+        String dni = datos.getDni();
+
+        if (dni != null
+                && personaRepository.existsByDniAndIdNot(dni.trim(), id)) {
+            throw new RegistroDuplicadoException(
+                    "Ya existe otra persona con ese DNI.");
+        }
+
+        persona.actualizarDatosPersonales(
+                datos.getNombre(),
+                datos.getApellido(),
+                dni,
+                datos.getFechaNacimiento(),
+                datos.getMail(),
+                datos.getTelefono());
+
+        PersonaDetenida actualizada = guardar(persona);
+
+        return new PersonaDetenidaDTO(actualizada);
+    }
+    private PersonaDetenida guardar(PersonaDetenida persona) {
+        try {
+            return repositorio.saveAndFlush(persona);
+        } catch (DataIntegrityViolationException excepcion) {
+            Throwable causa = excepcion;
+            while (causa != null) {
+                if (causa instanceof SQLException sql && sql.getErrorCode() == 1062) {
+                    throw new RegistroDuplicadoException("Ya existe una persona con ese DNI.");
+                }
+                causa = causa.getCause();
+            }
+            throw excepcion;
+        }
     }
 }
