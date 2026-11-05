@@ -31,12 +31,13 @@ CREATE TABLE IF NOT EXISTS `asaltos` (
   KEY `fk_asaltos_detenidas` (`id_persona_detenida`),
   CONSTRAINT `fk_asaltos_detenidas` FOREIGN KEY (`id_persona_detenida`) REFERENCES `personas_detenidas` (`id`),
   CONSTRAINT `fk_asaltos_sucursales` FOREIGN KEY (`codigo_sucursal`) REFERENCES `sucursales` (`codigo`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla policia_ciudad.asaltos: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla policia_ciudad.asaltos: ~3 rows (aproximadamente)
 INSERT INTO `asaltos` (`id`, `codigo_sucursal`, `id_persona_detenida`, `fecha`) VALUES
 	(1, 2001, 7, '2026-10-18'),
-	(2, 2003, 14, '2026-10-26');
+	(2, 2003, 14, '2026-10-26'),
+	(4, 2001, 7, '2026-11-02');
 
 -- Volcando estructura para tabla policia_ciudad.bandas
 CREATE TABLE IF NOT EXISTS `bandas` (
@@ -201,7 +202,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   CONSTRAINT `chk_usuarios_password_hash` CHECK ((char_length(trim(`password_hash`)) > 0))
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla policia_ciudad.usuarios: ~4 rows (aproximadamente)
+-- Volcando datos para la tabla policia_ciudad.usuarios: ~3 rows (aproximadamente)
 INSERT INTO `usuarios` (`id`, `id_persona`, `nombre_usuario`, `password_hash`, `rol`) VALUES
 	(1, 2, 'adminprueba', '$2a$10$tHjFWhmnrYJQ5agQygkFsOjGwL7fiin3DsSxHdNhi9izt4.2nA.X.', 'ADMINISTRADOR'),
 	(2, 3, 'investigadorprueba', '$2a$10$jNBovAF9BxZWIaALgj800O1CzgmbOg9wmeNi2tI.sHIGaioVe65u6', 'INVESTIGADOR'),
