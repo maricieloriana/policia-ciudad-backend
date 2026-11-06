@@ -145,8 +145,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     public UsuarioDTO actualizar(int id, String nombreUsuario, Rol rol,
             String nombreAdministrador) {
 
-        List<Usuario> administradores =
-                usuarioRepository.bloquearPorRol(Rol.ADMINISTRADOR);
+        List<Usuario> administradores
+                = usuarioRepository.bloquearPorRol(Rol.ADMINISTRADOR);
         Usuario usuario = buscarUsuario(id);
         validarOperacion(usuario, rol, nombreAdministrador, administradores);
 
@@ -176,11 +176,46 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional
     public void eliminar(int id, String nombreAdministrador) {
-        List<Usuario> administradores =
-                usuarioRepository.bloquearPorRol(Rol.ADMINISTRADOR);
+        List<Usuario> administradores
+                = usuarioRepository.bloquearPorRol(Rol.ADMINISTRADOR);
         Usuario usuario = buscarUsuario(id);
         validarOperacion(usuario, null, nombreAdministrador, administradores);
         usuarioRepository.delete(usuario);
+    }
+
+    @Override
+    @Transactional
+    public void cambiarPassword(int id, String nuevaPassword, String nombreUsuarioSolicitante) {
+        Usuario solicitante = usuarioRepository
+                .findByNombreUsuario(nombreUsuarioSolicitante)
+                .orElseThrow(() -> new AccessDeniedException(
+                "Usuario solicitante no encontrado."
+        ));
+
+        if (solicitante.getRol() != Rol.METICHE) {
+            throw new AccessDeniedException(
+                    "No tiene permisos para cambiar contrasenias."
+            );
+        }
+        if (nuevaPassword == null || nuevaPassword.isBlank()
+                || nuevaPassword.length() < 8) {
+
+            throw new DatosInvalidosException(
+                    "La contrasenia debe tener al menos 8 caracteres."
+            );
+        }
+
+        if (nuevaPassword.getBytes(StandardCharsets.UTF_8).length > 72) {
+            throw new DatosInvalidosException("La contrasenia no debe superar 72 bytes en UTF-8.");
+        }
+        Usuario usuario = buscarUsuario(id);
+        if (usuario.getNombreUsuario().equals(nombreUsuarioSolicitante)) {
+            throw new AccessDeniedException("No puede cambiar su propia contrasenia.");
+        }
+
+        String hash = passwordEncoder.encode(nuevaPassword);
+        usuario.cambiarPasswordHash(hash);
+        usuarioRepository.save(usuario);
     }
 
     private Usuario buscarUsuario(int id) {
@@ -190,7 +225,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "No existe una cuenta con el identificador " + id + "."));
+                "No existe una cuenta con el identificador " + id + "."));
     }
 
     private void validarOperacion(Usuario cuenta, Rol rolDestino,
@@ -199,7 +234,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario administrador = usuarioRepository
                 .findByNombreUsuario(nombreAdministrador)
                 .orElseThrow(() -> new AccessDeniedException(
-                        "La cuenta administradora no esta disponible."));
+                "La cuenta administradora no esta disponible."));
         if (administrador.getRol() != Rol.ADMINISTRADOR) {
             throw new AccessDeniedException("La operacion requiere un administrador.");
         }

@@ -12,33 +12,62 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component // Spring administra este componente
-@Profile("carga-inicial") // Solo se activa con este perfil
-public class AdministradorInicial implements CommandLineRunner { //permite ejecutar una tarea al arrancar la aplicación
+@Component
+@Profile("carga-inicial")
+public class AdministradorInicial implements CommandLineRunner {
 
     private final PersonaRepository personaRepository;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final String nombreUsuario;
     private final String contrasenia;
+    private final String nombreUsuarioMetiche;
+    private final String contraseniaMetiche;
 
     public AdministradorInicial(
             PersonaRepository personaRepository,
             UsuarioRepository usuarioRepository,
             PasswordEncoder passwordEncoder,
             @Value("${ADMIN_INICIAL_USUARIO:}") String nombreUsuario,
-            @Value("${ADMIN_INICIAL_PASSWORD:}") String contrasenia) {
-            //value recibe las credenciales desde la configuración; en el siguiente paso las suministraremos mediante variables de entorno
+            @Value("${ADMIN_INICIAL_PASSWORD:}") String contrasenia,
+            @Value("${METICHE_INICIAL_USUARIO:metiche}") String nombreUsuarioMetiche,
+            @Value("${METICHE_INICIAL_PASSWORD:}") String contraseniaMetiche) {
+
         this.personaRepository = personaRepository;
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+
         this.nombreUsuario = nombreUsuario.trim();
         this.contrasenia = contrasenia;
+
+        this.nombreUsuarioMetiche = nombreUsuarioMetiche.trim();
+        this.contraseniaMetiche = contraseniaMetiche;
     }
 
     @Override
-    @Transactional // Guarda la persona y la cuenta en una misma transacción
+    @Transactional
     public void run(String... args) {
+
+        crearUsuarioInicial(
+                nombreUsuario,
+                contrasenia,
+                Rol.ADMINISTRADOR,
+                "Administrador inicial"
+        );
+
+        crearUsuarioInicial(
+                nombreUsuarioMetiche,
+                contraseniaMetiche,
+                Rol.METICHE,
+                "Usuario metiche"
+        );
+    }
+
+    private void crearUsuarioInicial(
+            String nombreUsuario,
+            String contrasenia,
+            Rol rol,
+            String nombrePersona) {
 
         if (nombreUsuario.isBlank() || contrasenia.isBlank()) {
             throw new IllegalStateException(
@@ -47,33 +76,20 @@ public class AdministradorInicial implements CommandLineRunner { //permite ejecu
         }
 
         if (contrasenia.length() < 8) {
-            throw new IllegalStateException(
-                    "La contrasenia inicial debe tener al menos 8 caracteres."
-            );
+            throw new IllegalStateException("La contrasenia debe tener al menos 8 caracteres.");
         }
 
         if (usuarioRepository.existsByNombreUsuario(nombreUsuario)) {
-            System.out.println(
-                    "La cuenta indicada ya existe; no se modifico."
-            );
+            System.out.println("La cuenta " + nombreUsuario + " ya existe; no se modifico.");
             return;
         }
 
-        Persona titular = personaRepository.save(
-                new Persona("Administrador inicial")
-        );
-            //encode genera el hash BCrypt antes de guardar la cuenta.
+        Persona titular = personaRepository.save(new Persona(nombrePersona));
+
         String hash = passwordEncoder.encode(contrasenia);
 
-        Usuario administrador = new Usuario(
-                titular.getId(),
-                nombreUsuario,
-                hash,
-                Rol.ADMINISTRADOR
-        );
-
-        usuarioRepository.save(administrador);
-
-        System.out.println("Cuenta de administrador inicial creada.");
+        Usuario usuario = new Usuario(titular.getId(),nombreUsuario,hash,rol);
+        usuarioRepository.save(usuario);
+        System.out.println("Cuenta inicial creada: " + nombreUsuario);
     }
 }

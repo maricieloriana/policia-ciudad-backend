@@ -22,5 +22,7 @@ public interface UsuarioService {
     UsuarioDTO actualizar(int id, String nombreUsuario, Rol rol,
             String nombreAdministrador);
     void eliminar(int id, String nombreAdministrador);
+    
+    void cambiarPassword(int id, String nuevaPassword, String nombreUsuarioSolicitante);
 
 }

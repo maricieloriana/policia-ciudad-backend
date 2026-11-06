@@ -56,10 +56,12 @@ public class Usuario {
         cambiarNombreUsuario(nombreUsuario);
         cambiarRol(rol);
     }
+
     @JsonIgnore // Evita incluir el hash al convertir Usuario a JSON
     public String getPasswordHash() {
         return passwordHash; // Permite leer el hash para comprobar la contraseña
     }
+
     public Integer getId() {
         return id;
     }
@@ -94,5 +96,15 @@ public class Usuario {
         }
 
         this.rol = rol;
+    }
+
+    public void cambiarPasswordHash(String nuevoHash) {
+        if (nuevoHash == null || nuevoHash.isBlank()) {
+            throw new DatosInvalidosException(
+                    "El hash de la contrasenia es obligatorio."
+            );
+        }
+
+        this.passwordHash = nuevoHash;
     }
 }

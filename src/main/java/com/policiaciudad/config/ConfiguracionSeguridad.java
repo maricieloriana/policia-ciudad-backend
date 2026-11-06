@@ -27,6 +27,9 @@ public class ConfiguracionSeguridad {
             throws Exception { //SecurityFilterChain aplica los controles antes de llegar al controlador
 // declara posibles errores al construir la configuración
         http
+                .headers(headers -> headers
+                  .cacheControl(Customizer.withDefaults())
+                )
                 .authorizeHttpRequests(permisos -> permisos
                         // Permite el procesamiento interno de errores
                         .dispatcherTypeMatchers(DispatcherType.ERROR)
@@ -48,6 +51,10 @@ public class ConfiguracionSeguridad {
                     // Solo un administrador puede registrar cuentas
                         .requestMatchers(HttpMethod.POST, "/api/usuarios")
                         .hasRole("ADMINISTRADOR")
+                        
+                        // METICHE solamente puede cambiar contraseñas
+                        .requestMatchers(HttpMethod.PUT, "/api/usuarios/{id}/password")
+                        .hasRole("METICHE")
                         
                         // Administradores e investigadores pueden consultar todas las contrataciones
                         .requestMatchers(HttpMethod.GET, "/api/contrataciones")
