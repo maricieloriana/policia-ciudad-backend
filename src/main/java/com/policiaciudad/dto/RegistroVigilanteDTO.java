@@ -18,14 +18,6 @@ public class RegistroVigilanteDTO {
         // Permite cargar los datos recibidos en JSON
     }
 
-
-
-
-
-
-
-
-
     public String getNombre() {
         return nombre;
     }
