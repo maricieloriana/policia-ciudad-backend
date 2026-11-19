@@ -8,14 +8,15 @@ import java.time.LocalDate;
 @Table(name = "vigilantes")
 public class Vigilante extends Persona {
 
-    protected Vigilante() {
-        super();
+    public Vigilante() {
+        // Constructor necesario para JPA.
     }
 
-    public Vigilante(String nombre, String apellido, String dni,
+public Vigilante(String nombre, String apellido, String dni,
             LocalDate fechaNacimiento, String mail, String telefono) {
-        super();
-        actualizarDatosPersonales(nombre, apellido, dni,
-                fechaNacimiento, mail, telefono);
+        super(nombre, apellido, dni, fechaNacimiento, mail, telefono);
     }
+
+
 }
+

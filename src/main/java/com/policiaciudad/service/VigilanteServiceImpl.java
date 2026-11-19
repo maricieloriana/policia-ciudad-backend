@@ -27,20 +27,24 @@ public class VigilanteServiceImpl implements VigilanteService { //Implementa el 
     private final VigilanteRepository vigilanteRepository;
     private final ContratacionRepository contratacionRepository;
     private final PersonaRepository personaRepository;
-    
+    private final PersonaService personaService;
+
 // Recibe los repositorios mediante el constructor
     public VigilanteServiceImpl(
             UsuarioRepository usuarioRepository,
             VigilanteRepository vigilanteRepository,
             ContratacionRepository contratacionRepository,
-            PersonaRepository personaRepository) {
+            PersonaRepository personaRepository,
+            PersonaService personaService) {
 
         this.usuarioRepository = usuarioRepository;
         this.vigilanteRepository = vigilanteRepository;
         this.contratacionRepository = contratacionRepository;
         this.personaRepository = personaRepository;
+        this.personaService = personaService;
     }
 //Comprueba la cuenta y el rol.
+
     @Override
     @Transactional(readOnly = true) // La operación solo consulta datos
     public VigilanteDTO consultarPropio(String nombreUsuario) {
@@ -69,8 +73,6 @@ public class VigilanteServiceImpl implements VigilanteService { //Implementa el 
         return convertirADTO(vigilante);
     }
 //findById, heredado de JpaRepository, obtiene al vigilante mediante usuario.getIdPersona().
-//Devuelve el identificador y el nombre heredados de Persona, junto con la edad propia de Vigilante
-
 
     @Override
     @Transactional(readOnly = true)
@@ -79,6 +81,7 @@ public class VigilanteServiceImpl implements VigilanteService { //Implementa el 
                 .map(this::convertirADTO)
                 .toList();
     }
+
     @Override
     @Transactional(readOnly = true)
     public VigilanteDTO consultarPorId(int id) {
@@ -94,9 +97,8 @@ public class VigilanteServiceImpl implements VigilanteService { //Implementa el 
                         "No existe un vigilante con el identificador "
                         + id + "."));
 
-     return convertirADTO(vigilante);
+        return convertirADTO(vigilante);
     }
-
 
     @Override
     @Transactional
@@ -137,7 +139,8 @@ public class VigilanteServiceImpl implements VigilanteService { //Implementa el 
                     "Los datos del vigilante son obligatorios.");
         }
 
-        Vigilante vigilante = new Vigilante(
+        Vigilante vigilante = new Vigilante();
+        personaService.actualizarDatosPersonales(vigilante,
                 datos.getNombre(),
                 datos.getApellido(),
                 datos.getDni(),
@@ -154,6 +157,7 @@ public class VigilanteServiceImpl implements VigilanteService { //Implementa el 
 
         return convertirADTO(guardado);
     }
+
     //Este método concentra la conversión para reutilizarla en las distintas operaciones
     private VigilanteDTO convertirADTO(Vigilante vigilante) {
         return new VigilanteDTO(
@@ -163,10 +167,11 @@ public class VigilanteServiceImpl implements VigilanteService { //Implementa el 
                 vigilante.getApellido(),
                 vigilante.getDni(),
                 vigilante.getFechaNacimiento(),
-                vigilante.calcularEdad(),
+                personaService.calcularEdad(vigilante.getFechaNacimiento()),
                 vigilante.getMail(),
                 vigilante.getTelefono());
     }
+
     @Override
     @Transactional
     public VigilanteDTO actualizarDatos(
@@ -196,7 +201,7 @@ public class VigilanteServiceImpl implements VigilanteService { //Implementa el 
                     "Ya existe otra persona con ese DNI.");
         }
 
-        vigilante.actualizarDatosPersonales(
+        personaService.actualizarDatosPersonales(vigilante,
                 datos.getNombre(),
                 datos.getApellido(),
                 dni,
@@ -208,6 +213,7 @@ public class VigilanteServiceImpl implements VigilanteService { //Implementa el 
 
         return convertirADTO(actualizado);
     }
+
     private Vigilante guardar(Vigilante persona) {
         try {
             return vigilanteRepository.saveAndFlush(persona);

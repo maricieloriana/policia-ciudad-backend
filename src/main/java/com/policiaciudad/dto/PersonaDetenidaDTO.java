@@ -37,7 +37,7 @@ public class PersonaDetenidaDTO {
         return numeroBanda;
     }
 
-    public PersonaDetenidaDTO(PersonaDetenida persona) {
+    public PersonaDetenidaDTO(PersonaDetenida persona, Integer edad) {
         this.id = persona.getId();
         this.nombreCompleto = persona.getNombreCompleto();
         this.numeroBanda = persona.getNumeroBanda();
@@ -45,7 +45,7 @@ public class PersonaDetenidaDTO {
         this.apellido = persona.getApellido();
         this.dni = persona.getDni();
         this.fechaNacimiento = persona.getFechaNacimiento();
-        this.edad = persona.calcularEdad();
+        this.edad = edad;
         this.mail = persona.getMail();
         this.telefono = persona.getTelefono();
     }

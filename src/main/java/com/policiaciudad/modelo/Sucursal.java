@@ -1,6 +1,5 @@
 package com.policiaciudad.modelo;
 
-import com.policiaciudad.exception.DatosInvalidosException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -23,34 +22,15 @@ public class Sucursal {
     private int cantidadEmpleados;
 
     protected Sucursal() {
-        // Constructor vacío necesario para que JPA reconstruya el objeto
+        // Constructor necesario para JPA.
     }
 
     public Sucursal(int codigo, int codigoEntidadBancaria,
             String domicilio, int cantidadEmpleados) {
-
-        if (codigo <= 0) {
-            throw new DatosInvalidosException(
-                    "El codigo de sucursal debe ser positivo."
-            );
-        }
-
-        if (codigoEntidadBancaria <= 0) {
-            throw new DatosInvalidosException(
-                    "El codigo de entidad bancaria debe ser positivo."
-            );
-        }
-
-        if (domicilio == null || domicilio.isBlank()) {
-            throw new DatosInvalidosException(
-                    "El domicilio de la sucursal es obligatorio."
-            );
-        }
-
         this.codigo = codigo;
         this.codigoEntidadBancaria = codigoEntidadBancaria;
-        this.domicilio = domicilio.trim();
-        actualizarCantidadEmpleados(cantidadEmpleados);
+        this.domicilio = domicilio;
+        this.cantidadEmpleados = cantidadEmpleados;
     }
 
     public int getCodigo() {
@@ -65,33 +45,15 @@ public class Sucursal {
         return domicilio;
     }
 
+    public void setDomicilio(String domicilio) {
+        this.domicilio = domicilio;
+    }
+
     public int getCantidadEmpleados() {
         return cantidadEmpleados;
     }
 
-    public void actualizarCantidadEmpleados(int cantidad) { // Permite modificar la cantidad y rechaza números negativos
-        if (cantidad < 0) {
-            throw new DatosInvalidosException(
-                    "La cantidad de empleados no puede ser negativa."
-            );
-        }
-
-        this.cantidadEmpleados = cantidad;
-    }
-    public void cambiarDomicilio(String domicilio) {
-
-        // Rechaza domicilios nulos o formados solo por espacios
-        if (domicilio == null || domicilio.isBlank()) {
-            throw new DatosInvalidosException(
-                    "El domicilio de la sucursal es obligatorio.");
-        }
-
-        // Respeta el tamaño de la columna en la base de datos
-        if (domicilio.trim().length() > 255) {
-            throw new DatosInvalidosException(
-                    "El domicilio no debe superar 255 caracteres.");
-        }
-
-        this.domicilio = domicilio.trim();
+    public void setCantidadEmpleados(int cantidadEmpleados) {
+        this.cantidadEmpleados = cantidadEmpleados;
     }
 }

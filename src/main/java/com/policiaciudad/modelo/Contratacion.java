@@ -1,6 +1,5 @@
 package com.policiaciudad.modelo;
 
-import com.policiaciudad.exception.DatosInvalidosException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,28 +36,15 @@ public class Contratacion {
     private boolean conArma; // Indica si el servicio es armado
 
     protected Contratacion() {
-        // Constructor vacío necesario para que JPA reconstruya el objeto
+        // Constructor necesario para JPA.
     }
 
     public Contratacion(int codigoSucursal, int idVigilante,
             LocalDate fecha, boolean conArma) {
-
-        if (codigoSucursal <= 0) {
-            throw new DatosInvalidosException(
-                    "El codigo de sucursal debe ser positivo."
-            );
-        }
-
-        if (idVigilante <= 0) {
-            throw new DatosInvalidosException(
-                    "El ID del vigilante debe ser positivo."
-            );
-        }
-
         this.codigoSucursal = codigoSucursal;
         this.idVigilante = idVigilante;
-        cambiarFecha(fecha);
-        cambiarCondicionArma(conArma);
+        this.fecha = fecha;
+        this.conArma = conArma;
     }
 
     public Integer getId() {
@@ -77,21 +63,15 @@ public class Contratacion {
         return fecha;
     }
 
-    public boolean isConArma() { // Se utiliza is porque devuelve un boolean
-        return conArma;
-    }
-
-    public void cambiarFecha(LocalDate fecha) { // Impide que sea null
-        if (fecha == null) {
-            throw new DatosInvalidosException(
-                    "La fecha de contratacion es obligatoria."
-            );
-        }
-
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 
-    public void cambiarCondicionArma(boolean conArma) {
+    public boolean isConArma() {
+        return conArma;
+    }
+
+    public void setConArma(boolean conArma) {
         this.conArma = conArma;
     }
 }

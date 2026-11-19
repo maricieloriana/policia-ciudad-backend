@@ -40,6 +40,7 @@ public class EntidadBancariaServiceImpl implements EntidadBancariaService {
         this.asaltoRepository = asaltoRepository;
         this.contratacionRepository = contratacionRepository;
     }
+
     @Override
     @Transactional
     public EntidadBancariaDTO registrar(RegistroEntidadBancariaDTO datos) {
@@ -58,10 +59,14 @@ public class EntidadBancariaServiceImpl implements EntidadBancariaService {
 
         validarDomicilio(datos.getDomicilioCentral());
 
-        // El modelo valida el código y el domicilio central
+        if (datos.getCodigo() <= 0) {
+            throw new DatosInvalidosException(
+                    "El codigo de la entidad debe ser positivo.");
+        }
+
         EntidadBancaria entidad = new EntidadBancaria(
                 datos.getCodigo(),
-                datos.getDomicilioCentral());
+                datos.getDomicilioCentral().trim());
 
         if (entidadRepository.existsById(entidad.getCodigo())) {
             throw new RegistroDuplicadoException(
@@ -82,10 +87,17 @@ public class EntidadBancariaServiceImpl implements EntidadBancariaService {
 
             validarDomicilio(dato.getDomicilio());
 
+            if (dato.getCodigo() <= 0) {
+                throw new DatosInvalidosException(
+                        "El codigo de sucursal debe ser positivo.");
+            }
+
+            validarCantidadEmpleados(dato.getCantidadEmpleados());
+
             Sucursal sucursal = new Sucursal(
                     dato.getCodigo(),
                     entidad.getCodigo(),
-                    dato.getDomicilio(),
+                    dato.getDomicilio().trim(),
                     dato.getCantidadEmpleados());
 
             // Detecta códigos repetidos dentro de la misma solicitud
@@ -132,6 +144,7 @@ public class EntidadBancariaServiceImpl implements EntidadBancariaService {
                     "El domicilio es obligatorio y admite hasta 255 caracteres.");
         }
     }
+
     @Override
     @Transactional(readOnly = true)
     public List<EntidadBancariaDTO> listar() {
@@ -158,6 +171,7 @@ public class EntidadBancariaServiceImpl implements EntidadBancariaService {
                 })
                 .toList();
     }
+
     @Override
     @Transactional(readOnly = true)
     public EntidadBancariaDTO consultarPorCodigo(int codigo) {
@@ -189,6 +203,7 @@ public class EntidadBancariaServiceImpl implements EntidadBancariaService {
                 entidad.getDomicilioCentral(),
                 sucursales);
     }
+
     @Override
     @Transactional
     public EntidadBancariaDTO actualizarDomicilioCentral(
@@ -205,8 +220,8 @@ public class EntidadBancariaServiceImpl implements EntidadBancariaService {
                         "No existe una entidad bancaria con el codigo "
                         + codigo + "."));
 
-        // El modelo valida y corrige el domicilio central
-        entidad.cambiarDomicilioCentral(domicilioCentral);
+        validarDomicilio(domicilioCentral);
+        entidad.setDomicilioCentral(domicilioCentral.trim());
 
         EntidadBancaria actualizada = entidadRepository.save(entidad);
 
@@ -265,4 +280,12 @@ public class EntidadBancariaServiceImpl implements EntidadBancariaService {
 
         entidadRepository.delete(entidad);
     }
+
+    private void validarCantidadEmpleados(Integer cantidad) {
+        if (cantidad == null || cantidad < 0) {
+            throw new DatosInvalidosException(
+                    "La cantidad de empleados es obligatoria y no puede ser negativa.");
+        }
+    }
+
 }

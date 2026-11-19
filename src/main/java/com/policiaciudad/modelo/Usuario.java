@@ -1,6 +1,5 @@
 package com.policiaciudad.modelo;
 
-import com.policiaciudad.exception.DatosInvalidosException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -33,33 +32,17 @@ public class Usuario {
     private Rol rol;
 
     protected Usuario() {
-        // Constructor vacío necesario para que JPA reconstruya el objeto
+        // Constructor necesario para JPA.
     }
 
     public Usuario(int idPersona, String nombreUsuario,
             String passwordHash, Rol rol) {
-
-        if (idPersona <= 0) {
-            throw new DatosInvalidosException(
-                    "El ID de la persona debe ser positivo."
-            );
-        }
-
-        if (passwordHash == null || passwordHash.isBlank()) {
-            throw new DatosInvalidosException(
-                    "El hash de la contrasenia es obligatorio."
-            );
-        }
-
         this.idPersona = idPersona;
+        this.nombreUsuario = nombreUsuario;
         this.passwordHash = passwordHash;
-        cambiarNombreUsuario(nombreUsuario);
-        cambiarRol(rol);
+        this.rol = rol;
     }
-    @JsonIgnore // Evita incluir el hash al convertir Usuario a JSON
-    public String getPasswordHash() {
-        return passwordHash; // Permite leer el hash para comprobar la contraseña
-    }
+
     public Integer getId() {
         return id;
     }
@@ -72,27 +55,20 @@ public class Usuario {
         return nombreUsuario;
     }
 
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
+
+    @JsonIgnore
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
     public Rol getRol() {
         return rol;
     }
 
-    public void cambiarNombreUsuario(String nombre) {
-        if (nombre == null || nombre.isBlank()) {
-            throw new DatosInvalidosException(
-                    "El nombre de usuario es obligatorio."
-            );
-        }
-
-        this.nombreUsuario = nombre.trim();
-    }
-
-    public void cambiarRol(Rol rol) { // Valida el valor
-        if (rol == null) {
-            throw new DatosInvalidosException(
-                    "El rol es obligatorio."
-            );
-        }
-
+    public void setRol(Rol rol) {
         this.rol = rol;
     }
 }

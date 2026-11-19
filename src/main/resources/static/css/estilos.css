@@ -188,3 +188,69 @@ td.acciones-celda a.boton {
     width: 100%;
     overflow-x: auto;
 }
+
+/* Más espacio para los listados con datos personales */
+.pagina-listado header,
+.pagina-listado main {
+    max-width: 1480px;
+}
+
+/* Permite desplazar la tabla cuando supera el ancho disponible */
+.pagina-listado .tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.pagina-listado table {
+    width: 100%;
+    table-layout: auto;
+}
+
+/* Mantiene completos los títulos, fechas, DNI y teléfonos */
+.pagina-listado th,
+.pagina-listado td {
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+    vertical-align: middle;
+}
+
+/* El nombre puede ocupar varias líneas, separado por palabras */
+.pagina-listado td:nth-child(2) {
+    min-width: 220px;
+    max-width: 280px;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+/* Botones más compactos y alineados */
+.pagina-listado td.acciones-celda .acciones {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.pagina-listado td.acciones-celda form {
+    margin: 0;
+}
+
+.pagina-listado td.acciones-celda button,
+.pagina-listado td.acciones-celda a.boton {
+    padding: 9px 14px;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .pagina-listado header,
+    .pagina-listado main {
+        padding: 16px;
+    }
+
+    .pagina-listado th,
+    .pagina-listado td {
+        padding: 10px;
+    }
+}

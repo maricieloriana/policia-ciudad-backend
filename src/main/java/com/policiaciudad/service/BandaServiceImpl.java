@@ -36,7 +36,13 @@ public class BandaServiceImpl implements BandaService {
                     "El numero y la cantidad de miembros son obligatorios.");
         }
 
-        // El modelo valida el número y la cantidad de miembros
+        if (numero <= 0) {
+            throw new DatosInvalidosException(
+                    "El numero de banda debe ser positivo.");
+        }
+
+        validarCantidadMiembros(cantidadMiembros);
+
         Banda banda = new Banda(numero, cantidadMiembros);
 
         // Evita registrar otra banda con el mismo número
@@ -52,6 +58,7 @@ public class BandaServiceImpl implements BandaService {
                 guardada.getNumero(),
                 guardada.getCantidadMiembros());
     }
+
     @Override
     @Transactional(readOnly = true)
     public List<BandaDTO> listar() {
@@ -63,6 +70,7 @@ public class BandaServiceImpl implements BandaService {
                         banda.getCantidadMiembros()))
                 .toList();
     }
+
     @Override
     @Transactional(readOnly = true)
     public BandaDTO consultarPorNumero(int numero) {
@@ -81,6 +89,7 @@ public class BandaServiceImpl implements BandaService {
                 banda.getNumero(),
                 banda.getCantidadMiembros());
     }
+
     @Override
     @Transactional
     public BandaDTO actualizarCantidadMiembros(
@@ -102,8 +111,8 @@ public class BandaServiceImpl implements BandaService {
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "No existe una banda con el numero " + numero + "."));
 
-        // El modelo rechaza cantidades negativas
-        banda.actualizarCantidadMiembros(cantidadMiembros);
+        validarCantidadMiembros(cantidadMiembros);
+        banda.setCantidadMiembros(cantidadMiembros);
 
         Banda actualizada = repositorio.save(banda);
 
@@ -111,6 +120,7 @@ public class BandaServiceImpl implements BandaService {
                 actualizada.getNumero(),
                 actualizada.getCantidadMiembros());
     }
+
     @Override
     @Transactional
     public void eliminar(int numero) {
@@ -133,4 +143,12 @@ public class BandaServiceImpl implements BandaService {
 
         repositorio.delete(banda);
     }
+
+    private void validarCantidadMiembros(Integer cantidad) {
+        if (cantidad == null || cantidad < 0) {
+            throw new DatosInvalidosException(
+                    "La cantidad de miembros es obligatoria y no puede ser negativa.");
+        }
+    }
+
 }

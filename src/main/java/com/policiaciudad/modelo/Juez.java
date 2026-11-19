@@ -1,6 +1,5 @@
 package com.policiaciudad.modelo;
 
-import com.policiaciudad.exception.DatosInvalidosException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -16,25 +15,23 @@ public class Juez extends Persona {
     @Column(name = "anios_servicio", nullable = false)
     private int aniosServicio;
 
-    protected Juez() {
-        super(); // Constructor vacío necesario para que JPA reconstruya el objeto
+    public Juez() {
+        // Constructor necesario para JPA.
     }
 
-    public Juez(String nombreCompleto, int claveInterna,
-            int aniosServicio) {
-
-        super(nombreCompleto); // Reutiliza la validación del nombre de Persona
-
-        if (claveInterna <= 0) {
-            throw new DatosInvalidosException(
-                    "La clave interna debe ser positiva."
-            );
-        }
-
+    public Juez(String nombreCompleto, int claveInterna, int aniosServicio) {
+        super(nombreCompleto);
         this.claveInterna = claveInterna;
-        actualizarAniosServicio(aniosServicio);
+        this.aniosServicio = aniosServicio;
     }
-    
+
+    public Juez(String nombre, String apellido, String dni,
+            LocalDate fechaNacimiento, String mail, String telefono,
+            int claveInterna, int aniosServicio) {
+        super(nombre, apellido, dni, fechaNacimiento, mail, telefono);
+        this.claveInterna = claveInterna;
+        this.aniosServicio = aniosServicio;
+    }
 
     public int getClaveInterna() {
         return claveInterna;
@@ -44,33 +41,7 @@ public class Juez extends Persona {
         return aniosServicio;
     }
 
-    public void actualizarAniosServicio(int anios) { // Permite modificar la antigüedad y rechaza valores negativos
-        if (anios < 0) {
-            throw new DatosInvalidosException(
-                    "Los anios de servicio no pueden ser negativos."
-            );
-        }
-
-        this.aniosServicio = anios;
-    }
-    public Juez(
-            String nombre,
-            String apellido,
-            String dni,
-            LocalDate fechaNacimiento,
-            String mail,
-            String telefono,
-            int claveInterna,
-            int aniosServicio) {
-
-        this(nombre + " " + apellido, claveInterna, aniosServicio);
-
-        actualizarDatosPersonales(
-                nombre,
-                apellido,
-                dni,
-                fechaNacimiento,
-                mail,
-                telefono);
+    public void setAniosServicio(int aniosServicio) {
+        this.aniosServicio = aniosServicio;
     }
 }

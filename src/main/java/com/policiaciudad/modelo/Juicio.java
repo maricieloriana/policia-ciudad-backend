@@ -1,6 +1,5 @@
 package com.policiaciudad.modelo;
 
-import com.policiaciudad.exception.DatosInvalidosException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,33 +31,16 @@ public class Juicio {
     private int aniosCarcel;
 
     protected Juicio() {
-        // Constructor vacío necesario para que JPA reconstruya el objeto
+        // Constructor necesario para JPA.
     }
 
-    public Juicio(int idAsalto, int idPersonaDetenida,
-            int idJuez, boolean condenado, int aniosCarcel) {
-
-        if (idAsalto <= 0 || idPersonaDetenida <= 0 || idJuez <= 0) {
-            throw new DatosInvalidosException(
-                    "Los identificadores deben ser positivos."
-            );
-        }
-
+    public Juicio(int idAsalto, int idPersonaDetenida, int idJuez,
+            boolean condenado, int aniosCarcel) {
         this.idAsalto = idAsalto;
         this.idPersonaDetenida = idPersonaDetenida;
         this.idJuez = idJuez;
-
-        if (condenado) {
-            condenar(aniosCarcel);
-        } else {
-            if (aniosCarcel != 0) {
-                throw new DatosInvalidosException(
-                        "Una absolucion debe tener cero anios de carcel."
-                );
-            }
-
-            absolver();
-        }
+        this.condenado = condenado;
+        this.aniosCarcel = aniosCarcel;
     }
 
     public Integer getId() {
@@ -81,23 +63,15 @@ public class Juicio {
         return condenado;
     }
 
+    public void setCondenado(boolean condenado) {
+        this.condenado = condenado;
+    }
+
     public int getAniosCarcel() {
         return aniosCarcel;
     }
 
-    public void condenar(int anios) { // Establece juntos el resultado y los años de cárcel
-        if (anios <= 0) {
-            throw new DatosInvalidosException(
-                    "La condena debe ser mayor que cero."
-            );
-        }
-
-        this.condenado = true;
-        this.aniosCarcel = anios;
-    }
-
-    public void absolver() { // Establece absolución y pena cero
-        this.condenado = false;
-        this.aniosCarcel = 0;
+    public void setAniosCarcel(int aniosCarcel) {
+        this.aniosCarcel = aniosCarcel;
     }
 }

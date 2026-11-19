@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class PersonasRegistroTest {
+
+    private final PersonaService personaService = new PersonaService();
     private final PersonaRepository personas = mock(PersonaRepository.class);
     private final VigilanteRepository vigilantes = mock(VigilanteRepository.class);
     private final JuezRepository jueces = mock(JuezRepository.class);
@@ -31,7 +33,7 @@ class PersonasRegistroTest {
 
     @Test void registroDevuelveTodosLosDatos() {
         when(vigilantes.saveAndFlush(any(Vigilante.class))).thenAnswer(i -> i.getArgument(0));
-        var servicio = new VigilanteServiceImpl(usuarios, vigilantes, contratos, personas);
+        var servicio = new VigilanteServiceImpl(usuarios, vigilantes, contratos, personas, personaService);
         var respuesta = servicio.registrar(datos());
         assertEquals("Ana Pérez", respuesta.getNombreCompleto());
         assertEquals("00123456", respuesta.getDni());
@@ -41,7 +43,7 @@ class PersonasRegistroTest {
 
     @Test void dniDuplicadoEnCualquierPersonaImpideRegistrar() {
         when(personas.existsByDni("00123456")).thenReturn(true);
-        var servicio = new VigilanteServiceImpl(usuarios, vigilantes, contratos, personas);
+        var servicio = new VigilanteServiceImpl(usuarios, vigilantes, contratos, personas, personaService);
         assertThrows(RegistroDuplicadoException.class, () -> servicio.registrar(datos()));
         verify(vigilantes, never()).saveAndFlush(any());
     }
@@ -51,10 +53,12 @@ class PersonasRegistroTest {
                 LocalDate.of(2000, 1, 1), "ana@example.com", "11111111");
         when(vigilantes.findById(1)).thenReturn(Optional.of(persona));
         when(vigilantes.saveAndFlush(any(Vigilante.class))).thenAnswer(i -> i.getArgument(0));
-        var servicio = new VigilanteServiceImpl(usuarios, vigilantes, contratos, personas);
+        var servicio = new VigilanteServiceImpl(usuarios, vigilantes, contratos, personas, personaService);
         var respuesta = servicio.actualizarDatos(1, datos());
         verify(personas).existsByDniAndIdNot("00123456", 1);
-        assertEquals(persona.calcularEdad(), respuesta.getEdad());
+        assertEquals(personaService.calcularEdad(persona.getFechaNacimiento(),
+                LocalDate.now(java.time.ZoneId.of("America/Argentina/Buenos_Aires"))),
+                respuesta.getEdad());
     }
 
     @Test void juezMantieneClaveInternaDuranteEdicion() {
@@ -66,7 +70,7 @@ class PersonasRegistroTest {
         d.setNombre("Ana"); d.setApellido("Pérez"); d.setDni("00123456");
         d.setFechaNacimiento(LocalDate.of(2000, 1, 1)); d.setMail("ana@example.com");
         d.setTelefono("11111111"); d.setClaveInterna(9999); d.setAniosServicio(4);
-        var servicio = new JuezServiceImpl(jueces, juicios, usuarios, personas);
+        var servicio = new JuezServiceImpl(jueces, juicios, usuarios, personas, personaService);
         assertEquals(5001, servicio.actualizarDatos(1, d).getClaveInterna());
     }
 
@@ -76,7 +80,7 @@ class PersonasRegistroTest {
         d.setNombre("Ana"); d.setApellido("Pérez"); d.setDni("00123456");
         d.setFechaNacimiento(LocalDate.of(2000, 1, 1)); d.setMail("ana@example.com");
         d.setTelefono("11111111");
-        var servicio = new PersonaDetenidaServiceImpl(detenidas, bandas, asaltos, juicios, usuarios, personas);
+        var servicio = new PersonaDetenidaServiceImpl(detenidas, bandas, asaltos, juicios, usuarios, personas, personaService);
         var respuesta = servicio.registrar(d);
         assertEquals("00123456", respuesta.getDni());
         assertNull(respuesta.getNumeroBanda());

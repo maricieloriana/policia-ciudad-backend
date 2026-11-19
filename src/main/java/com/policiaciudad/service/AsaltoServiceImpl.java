@@ -46,7 +46,16 @@ public class AsaltoServiceImpl implements AsaltoService {
             );
         }
 
-        // El modelo valida identificadores positivos y fecha obligatoria
+        if (codigoSucursal <= 0 || idPersonaDetenida <= 0) {
+            throw new DatosInvalidosException(
+                    "Los identificadores deben ser positivos.");
+        }
+
+        if (fecha == null) {
+            throw new DatosInvalidosException(
+                    "La fecha del asalto es obligatoria.");
+        }
+
         Asalto asalto = new Asalto(
                 codigoSucursal,
                 idPersonaDetenida,
@@ -74,6 +83,7 @@ public class AsaltoServiceImpl implements AsaltoService {
                 guardado.getFecha()
         );
     }
+
     @Override
     @Transactional(readOnly = true) // Consulta sin modificar registros
     public List<AsaltoDTO> listar() {
@@ -88,6 +98,7 @@ public class AsaltoServiceImpl implements AsaltoService {
                 )) // Convierte cada entidad en un DTO
                 .toList();
     }
+
     @Override
     @Transactional(readOnly = true)
     public AsaltoDTO consultarPorId(int id) {
@@ -108,6 +119,7 @@ public class AsaltoServiceImpl implements AsaltoService {
                 asalto.getIdPersonaDetenida(),
                 asalto.getFecha());
     }
+
     @Override
     @Transactional
     public AsaltoDTO actualizarFecha(int id, LocalDate fecha) {
@@ -129,7 +141,7 @@ public class AsaltoServiceImpl implements AsaltoService {
                         "No existe un asalto con el identificador " + id + "."));
 
         // Modifica únicamente la fecha
-        asalto.corregirFecha(fecha);
+        asalto.setFecha(fecha);
 
         Asalto actualizado = repositorio.save(asalto);
 

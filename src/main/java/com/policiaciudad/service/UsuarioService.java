@@ -18,9 +18,14 @@ public interface UsuarioService {
     ); //Devuelve el Usuario registrado
 
     List<UsuarioDTO> listar();
+
     UsuarioDTO consultarPorId(int id);
+
     UsuarioDTO actualizar(int id, String nombreUsuario, Rol rol,
             String nombreAdministrador);
+
     void eliminar(int id, String nombreAdministrador);
+
+    void crearAdministradorInicial(String nombreUsuario, String contrasenia);
 
 }

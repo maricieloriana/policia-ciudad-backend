@@ -1,5 +1,6 @@
 package com.policiaciudad.service;
 
+import com.policiaciudad.modelo.Persona;
 import java.util.List;
 import java.util.Comparator;
 import com.policiaciudad.dto.UsuarioDTO;
@@ -115,6 +116,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         // Procesa la contraseña antes de construir la cuenta
         String hash = passwordEncoder.encode(contrasenia);
 
+        if (hash == null || hash.isBlank()) {
+            throw new DatosInvalidosException(
+                    "El hash de la contraseña es obligatorio.");
+        }
+
         Usuario usuario = new Usuario(
                 idPersona,
                 nombre,
@@ -145,8 +151,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     public UsuarioDTO actualizar(int id, String nombreUsuario, Rol rol,
             String nombreAdministrador) {
 
-        List<Usuario> administradores =
-                usuarioRepository.bloquearPorRol(Rol.ADMINISTRADOR);
+        List<Usuario> administradores
+                = usuarioRepository.bloquearPorRol(Rol.ADMINISTRADOR);
         Usuario usuario = buscarUsuario(id);
         validarOperacion(usuario, rol, nombreAdministrador, administradores);
 
@@ -168,16 +174,16 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new DatosInvalidosException(
                     "El rol VIGILANTE requiere una persona vigilante.");
         }
-        usuario.cambiarNombreUsuario(nombre);
-        usuario.cambiarRol(rol);
+        usuario.setNombreUsuario(nombre);
+        usuario.setRol(rol);
         return convertirDTO(usuarioRepository.save(usuario));
     }
 
     @Override
     @Transactional
     public void eliminar(int id, String nombreAdministrador) {
-        List<Usuario> administradores =
-                usuarioRepository.bloquearPorRol(Rol.ADMINISTRADOR);
+        List<Usuario> administradores
+                = usuarioRepository.bloquearPorRol(Rol.ADMINISTRADOR);
         Usuario usuario = buscarUsuario(id);
         validarOperacion(usuario, null, nombreAdministrador, administradores);
         usuarioRepository.delete(usuario);
@@ -218,6 +224,28 @@ public class UsuarioServiceImpl implements UsuarioService {
     private UsuarioDTO convertirDTO(Usuario usuario) {
         return new UsuarioDTO(usuario.getId(), usuario.getIdPersona(),
                 usuario.getNombreUsuario(), usuario.getRol());
+    }
+
+    @Override
+    @Transactional
+    public void crearAdministradorInicial(String nombreUsuario, String contrasenia) {
+        if (nombreUsuario == null || nombreUsuario.isBlank()
+                || contrasenia == null || contrasenia.isBlank()) {
+            throw new IllegalStateException(
+                    "Debe informar el usuario y la contrasenia inicial.");
+        }
+        if (contrasenia.length() < 8) {
+            throw new IllegalStateException(
+                    "La contrasenia inicial debe tener al menos 8 caracteres.");
+        }
+        String nombre = nombreUsuario.trim();
+        if (usuarioRepository.existsByNombreUsuario(nombre)) {
+            System.out.println("La cuenta indicada ya existe; no se modifico.");
+            return;
+        }
+        Persona titular = personaRepository.save(new Persona("Administrador inicial"));
+        registrar(titular.getId(), nombre, contrasenia, Rol.ADMINISTRADOR);
+        System.out.println("Cuenta de administrador inicial creada.");
     }
 
 }//Recibe sus repositorios y el procesador de contraseñas por constructor.

@@ -20,21 +20,25 @@ import com.policiaciudad.dto.RegistroJuezDTO;
 @Service // Spring registra el servicio
 public class JuezServiceImpl implements JuezService {
 //Implementa JuezService y recibe el repositorio por constructor.
+
     private final JuezRepository repositorio;
     private final JuicioRepository juicioRepository;
     private final UsuarioRepository usuarioRepository;
     private final PersonaRepository personaRepository;
+    private final PersonaService personaService;
 
     public JuezServiceImpl(
             JuezRepository repositorio,
             JuicioRepository juicioRepository,
             UsuarioRepository usuarioRepository,
-            PersonaRepository personaRepository) {
+            PersonaRepository personaRepository,
+            PersonaService personaService) {
 
         this.repositorio = repositorio;
         this.juicioRepository = juicioRepository;
         this.usuarioRepository = usuarioRepository;
         this.personaRepository = personaRepository;
+        this.personaService = personaService;
     }
 
     @Override
@@ -44,6 +48,7 @@ public class JuezServiceImpl implements JuezService {
                 .map(this::convertirADTO)
                 .toList();
     }
+
     @Override
     @Transactional(readOnly = true)
     public JuezDTO consultarPorId(int id) {
@@ -60,6 +65,7 @@ public class JuezServiceImpl implements JuezService {
 
         return convertirADTO(juez);
     }
+
     @Override
     @Transactional
     public JuezDTO actualizarAniosServicio(int id, Integer aniosServicio) {
@@ -80,8 +86,8 @@ public class JuezServiceImpl implements JuezService {
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "No existe un juez con el identificador " + id + "."));
 
-        // El modelo rechaza cantidades negativas
-        juez.actualizarAniosServicio(aniosServicio);
+        validarAniosServicio(aniosServicio);
+        juez.setAniosServicio(aniosServicio);
 
         Juez actualizado = guardar(juez);
 
@@ -116,8 +122,6 @@ public class JuezServiceImpl implements JuezService {
 
         repositorio.delete(juez);
     }
-    
-
 
     @Override
     @Transactional
@@ -135,15 +139,19 @@ public class JuezServiceImpl implements JuezService {
                     "La clave interna y los años de servicio son obligatorios.");
         }
 
+        validarDatosJuez(datos.getClaveInterna(), datos.getAniosServicio());
+
         Juez juez = new Juez(
+                datos.getNombre(), datos.getApellido(), datos.getDni(),
+                datos.getFechaNacimiento(), datos.getMail(), datos.getTelefono(),
+                datos.getClaveInterna(), datos.getAniosServicio());
+        personaService.actualizarDatosPersonales(juez,
                 datos.getNombre(),
                 datos.getApellido(),
                 datos.getDni(),
                 datos.getFechaNacimiento(),
                 datos.getMail(),
-                datos.getTelefono(),
-                datos.getClaveInterna(),
-                datos.getAniosServicio());
+                datos.getTelefono());
 
         if (personaRepository.existsByDni(juez.getDni())) {
             throw new RegistroDuplicadoException(
@@ -168,12 +176,13 @@ public class JuezServiceImpl implements JuezService {
                 juez.getApellido(),
                 juez.getDni(),
                 juez.getFechaNacimiento(),
-                juez.calcularEdad(),
+                personaService.calcularEdad(juez.getFechaNacimiento()),
                 juez.getMail(),
                 juez.getTelefono(),
                 juez.getClaveInterna(),
                 juez.getAniosServicio());
     }
+
     @Override
     @Transactional
     public JuezDTO actualizarDatos(int id, RegistroJuezDTO datos) {
@@ -207,7 +216,7 @@ public class JuezServiceImpl implements JuezService {
                     "Ya existe otra persona con ese DNI.");
         }
 
-        juez.actualizarDatosPersonales(
+        personaService.actualizarDatosPersonales(juez,
                 datos.getNombre(),
                 datos.getApellido(),
                 dni,
@@ -215,12 +224,13 @@ public class JuezServiceImpl implements JuezService {
                 datos.getMail(),
                 datos.getTelefono());
 
-        juez.actualizarAniosServicio(datos.getAniosServicio());
+        juez.setAniosServicio(datos.getAniosServicio());
 
         Juez actualizado = guardar(juez);
 
         return convertirADTO(actualizado);
     }
+
     private Juez guardar(Juez persona) {
         try {
             return repositorio.saveAndFlush(persona);
@@ -233,6 +243,20 @@ public class JuezServiceImpl implements JuezService {
                 causa = causa.getCause();
             }
             throw excepcion;
+        }
+    }
+
+    private void validarDatosJuez(Integer claveInterna, Integer aniosServicio) {
+        if (claveInterna == null || claveInterna <= 0) {
+            throw new DatosInvalidosException("La clave interna debe ser positiva.");
+        }
+        validarAniosServicio(aniosServicio);
+    }
+
+    private void validarAniosServicio(Integer aniosServicio) {
+        if (aniosServicio == null || aniosServicio < 0) {
+            throw new DatosInvalidosException(
+                    "Los años de servicio son obligatorios y no pueden ser negativos.");
         }
     }
 }

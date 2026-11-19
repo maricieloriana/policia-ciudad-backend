@@ -21,16 +21,17 @@ import java.time.LocalDate;
 //que implementa el contrato y coordina las validaciones del registro
 public class ContratacionServiceImpl implements ContratacionService { //cumple el contrato de la interfaz
 //final : impide reemplazar esas referencias después de construir el servicio
+
     private final ContratacionRepository repositorio;
     private final SucursalRepository sucursalRepository;
     private final VigilanteRepository vigilanteRepository;
     private final UsuarioRepository usuarioRepository;
 
     public ContratacionServiceImpl(
-        ContratacionRepository repositorio,
-        SucursalRepository sucursalRepository,
-        VigilanteRepository vigilanteRepository,
-        UsuarioRepository usuarioRepository) {
+            ContratacionRepository repositorio,
+            SucursalRepository sucursalRepository,
+            VigilanteRepository vigilanteRepository,
+            UsuarioRepository usuarioRepository) {
 
         this.repositorio = repositorio;
         this.sucursalRepository = sucursalRepository;
@@ -40,7 +41,6 @@ public class ContratacionServiceImpl implements ContratacionService { //cumple e
 
     @Override // indica que implementa su método
     @Transactional // Ejecuta el registro dentro de una transacción
-    //Primero comprueba los datos recibidos. Al crear Contratacion, reutiliza sus validaciones de identificadores positivos y fecha obligatoria.
     public ContratacionDTO registrar(ContratacionDTO datos) {
 
         if (datos == null) {
@@ -53,6 +53,16 @@ public class ContratacionServiceImpl implements ContratacionService { //cumple e
             throw new DatosInvalidosException(
                     "El ID se asigna al registrar la contratacion."
             );
+        }
+
+        if (datos.getCodigoSucursal() <= 0 || datos.getIdVigilante() <= 0) {
+            throw new DatosInvalidosException(
+                    "Los identificadores de sucursal y vigilante deben ser positivos.");
+        }
+
+        if (datos.getFecha() == null) {
+            throw new DatosInvalidosException(
+                    "La fecha de contratacion es obligatoria.");
         }
 
         Contratacion contratacion = new Contratacion(
@@ -99,11 +109,12 @@ public class ContratacionServiceImpl implements ContratacionService { //cumple e
                 guardada.isConArma()
         );
     }
+
     @Override // readonly indica que la transacción está destinada a consulta
     @Transactional(readOnly = true) // Consulta datos sin realizar modificaciones
     public List<ContratacionDTO> listar() {
 //findall es una operación heredada de JpaRepository que obtiene todas las contrataciones
-        return repositorio.findAll() 
+        return repositorio.findAll()
                 .stream() // Recorre las contrataciones obtenidas; permite procesar los elementos de la colección
                 .map(contratacion -> new ContratacionDTO(
                         contratacion.getId(),
@@ -114,7 +125,7 @@ public class ContratacionServiceImpl implements ContratacionService { //cumple e
                 )) // Convierte cada entidad en un DTO
                 .toList(); // Reúne los DTO en una lista
     }//map transforma
-    //Finalmente guarda el modelo y lo convierte en el DTO de respuesta
+
     @Override
     @Transactional(readOnly = true) // Solo consulta datos
     public List<ContratacionDTO> listarPropias(String nombreUsuario) {
@@ -151,6 +162,7 @@ public class ContratacionServiceImpl implements ContratacionService { //cumple e
                 ))
                 .toList();
     }//busca la cuenta, comprueba que corresponda a un vigilante y filtra por su idPersona. AccessDeniedException pertenece a Spring Security y representa una denegación de acceso.
+
     @Override
     @Transactional(readOnly = true)
     public ContratacionDTO consultarPorId(int id) {
@@ -173,6 +185,7 @@ public class ContratacionServiceImpl implements ContratacionService { //cumple e
                 contratacion.getFecha(),
                 contratacion.isConArma());
     }
+
     @Override
     @Transactional
     public ContratacionDTO actualizarCondicionArma(int id, Boolean conArma) {
@@ -195,7 +208,7 @@ public class ContratacionServiceImpl implements ContratacionService { //cumple e
                         + id + "."));
 
         // Modifica únicamente la condición de arma
-        contratacion.cambiarCondicionArma(conArma);
+        contratacion.setConArma(conArma);
 
         Contratacion actualizada = repositorio.save(contratacion);
 
@@ -206,6 +219,7 @@ public class ContratacionServiceImpl implements ContratacionService { //cumple e
                 actualizada.getFecha(),
                 actualizada.isConArma());
     }
+
     @Override
     @Transactional
     public ContratacionDTO actualizarFecha(int id, LocalDate fecha) {
@@ -238,7 +252,7 @@ public class ContratacionServiceImpl implements ContratacionService { //cumple e
                     "Ya existe una contratacion para esa sucursal, vigilante y fecha.");
         }
 
-        contratacion.cambiarFecha(fecha);
+        contratacion.setFecha(fecha);
 
         Contratacion actualizada = repositorio.save(contratacion);
 
@@ -249,6 +263,7 @@ public class ContratacionServiceImpl implements ContratacionService { //cumple e
                 actualizada.getFecha(),
                 actualizada.isConArma());
     }
+
     @Override
     @Transactional
     public void eliminar(int id) {
@@ -267,6 +282,7 @@ public class ContratacionServiceImpl implements ContratacionService { //cumple e
 
         repositorio.delete(contratacion);
     }
+
     @Override
     @Transactional
     public ContratacionDTO actualizarDatos(
@@ -303,8 +319,8 @@ public class ContratacionServiceImpl implements ContratacionService { //cumple e
                     "Ya existe una contratacion para esa sucursal, vigilante y fecha.");
         }
 
-        contratacion.cambiarFecha(fecha);
-        contratacion.cambiarCondicionArma(conArma);
+        contratacion.setFecha(fecha);
+        contratacion.setConArma(conArma);
 
         Contratacion actualizada = repositorio.save(contratacion);
 

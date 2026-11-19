@@ -49,6 +49,7 @@ public class SucursalServiceImpl implements SucursalService {
                         sucursal.getCantidadEmpleados()))
                 .toList();
     }
+
     @Override
     @Transactional(readOnly = true)
     public SucursalDTO consultarPorCodigo(int codigo) {
@@ -69,6 +70,7 @@ public class SucursalServiceImpl implements SucursalService {
                 sucursal.getDomicilio(),
                 sucursal.getCantidadEmpleados());
     }
+
     @Override
     @Transactional
     public SucursalDTO actualizarCantidadEmpleados(
@@ -91,8 +93,8 @@ public class SucursalServiceImpl implements SucursalService {
                         "No existe una sucursal con el codigo "
                         + codigo + "."));
 
-        // El modelo rechaza cantidades negativas
-        sucursal.actualizarCantidadEmpleados(cantidadEmpleados);
+        validarCantidadEmpleados(cantidadEmpleados);
+        sucursal.setCantidadEmpleados(cantidadEmpleados);
 
         Sucursal actualizada = sucursalRepository.save(sucursal);
 
@@ -102,6 +104,7 @@ public class SucursalServiceImpl implements SucursalService {
                 actualizada.getDomicilio(),
                 actualizada.getCantidadEmpleados());
     }
+
     @Override
     @Transactional
     public SucursalDTO actualizarDomicilio(int codigo, String domicilio) {
@@ -117,8 +120,8 @@ public class SucursalServiceImpl implements SucursalService {
                         "No existe una sucursal con el codigo "
                         + codigo + "."));
 
-        // El modelo valida y corrige el domicilio
-        sucursal.cambiarDomicilio(domicilio);
+        validarDomicilio(domicilio);
+        sucursal.setDomicilio(domicilio.trim());
 
         Sucursal actualizada = sucursalRepository.save(sucursal);
 
@@ -128,6 +131,7 @@ public class SucursalServiceImpl implements SucursalService {
                 actualizada.getDomicilio(),
                 actualizada.getCantidadEmpleados());
     }
+
     @Override
     @Transactional
     public SucursalDTO registrar(
@@ -151,11 +155,18 @@ public class SucursalServiceImpl implements SucursalService {
                     "El domicilio no debe superar 255 caracteres.");
         }
 
-        // El modelo valida los valores de la sucursal
+        if (datos.getCodigo() <= 0) {
+            throw new DatosInvalidosException(
+                    "El codigo de sucursal debe ser positivo.");
+        }
+
+        validarDomicilio(datos.getDomicilio());
+        validarCantidadEmpleados(datos.getCantidadEmpleados());
+
         Sucursal sucursal = new Sucursal(
                 datos.getCodigo(),
                 codigoEntidadBancaria,
-                datos.getDomicilio(),
+                datos.getDomicilio().trim(),
                 datos.getCantidadEmpleados());
 
         if (!entidadRepository.existsById(codigoEntidadBancaria)) {
@@ -176,6 +187,7 @@ public class SucursalServiceImpl implements SucursalService {
                 guardada.getDomicilio(),
                 guardada.getCantidadEmpleados());
     }
+
     @Override
     @Transactional
     public void eliminar(int codigo) {
@@ -210,6 +222,7 @@ public class SucursalServiceImpl implements SucursalService {
 
         sucursalRepository.delete(sucursal);
     }
+
     @Override
     @Transactional
     public SucursalDTO actualizarDatos(
@@ -230,9 +243,10 @@ public class SucursalServiceImpl implements SucursalService {
                         "No existe una sucursal con el codigo "
                         + codigo + "."));
 
-        // Reutiliza las validaciones del modelo
-        sucursal.cambiarDomicilio(domicilio);
-        sucursal.actualizarCantidadEmpleados(cantidadEmpleados);
+        validarDomicilio(domicilio);
+        validarCantidadEmpleados(cantidadEmpleados);
+        sucursal.setDomicilio(domicilio.trim());
+        sucursal.setCantidadEmpleados(cantidadEmpleados);
 
         Sucursal actualizada = sucursalRepository.save(sucursal);
 
@@ -242,4 +256,20 @@ public class SucursalServiceImpl implements SucursalService {
                 actualizada.getDomicilio(),
                 actualizada.getCantidadEmpleados());
     }
+
+    private void validarCantidadEmpleados(Integer cantidad) {
+        if (cantidad == null || cantidad < 0) {
+            throw new DatosInvalidosException(
+                    "La cantidad de empleados es obligatoria y no puede ser negativa.");
+        }
+    }
+
+    private void validarDomicilio(String domicilio) {
+        if (domicilio == null || domicilio.isBlank()
+                || domicilio.trim().length() > 255) {
+            throw new DatosInvalidosException(
+                    "El domicilio es obligatorio y admite hasta 255 caracteres.");
+        }
+    }
+
 }

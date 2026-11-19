@@ -29,6 +29,7 @@ public class PersonaDetenidaServiceImpl
     private final JuicioRepository juicioRepository;
     private final UsuarioRepository usuarioRepository;
     private final PersonaRepository personaRepository;
+    private final PersonaService personaService;
 
     public PersonaDetenidaServiceImpl(
             PersonaDetenidaRepository repositorio,
@@ -36,7 +37,8 @@ public class PersonaDetenidaServiceImpl
             AsaltoRepository asaltoRepository,
             JuicioRepository juicioRepository,
             UsuarioRepository usuarioRepository,
-            PersonaRepository personaRepository) {
+            PersonaRepository personaRepository,
+            PersonaService personaService) {
 
         this.repositorio = repositorio;
         this.bandaRepository = bandaRepository;
@@ -44,16 +46,17 @@ public class PersonaDetenidaServiceImpl
         this.juicioRepository = juicioRepository;
         this.usuarioRepository = usuarioRepository;
         this.personaRepository = personaRepository;
+        this.personaService = personaService;
     }
-
 
     @Override
     @Transactional(readOnly = true)
     public List<PersonaDetenidaDTO> listar() {
         return repositorio.findAll().stream()
-                .map(PersonaDetenidaDTO::new)
+                .map(this::convertirADTO)
                 .toList();
     }
+
     @Override
     @Transactional(readOnly = true)
     public PersonaDetenidaDTO consultarPorId(int id) {
@@ -69,8 +72,9 @@ public class PersonaDetenidaServiceImpl
                         "No existe una persona detenida con el identificador "
                         + id + "."));
 
-        return new PersonaDetenidaDTO(persona);
+        return convertirADTO(persona);
     }
+
     @Override
     @Transactional
     public PersonaDetenidaDTO actualizarBanda(int id, Integer numeroBanda) {
@@ -89,7 +93,7 @@ public class PersonaDetenidaServiceImpl
         if (numeroBanda == null) {
 
             // Quita la asignación de banda
-            persona.quitarBanda();
+            persona.setNumeroBanda(null);
 
         } else {
 
@@ -104,12 +108,12 @@ public class PersonaDetenidaServiceImpl
                         "La banda indicada no existe.");
             }
 
-            persona.asignarBanda(numeroBanda);
+            persona.setNumeroBanda(numeroBanda);
         }
 
         PersonaDetenida actualizada = guardar(persona);
 
-        return new PersonaDetenidaDTO(actualizada);
+        return convertirADTO(actualizada);
     }
 
     @Override
@@ -140,7 +144,7 @@ public class PersonaDetenidaServiceImpl
 
         repositorio.delete(persona);
     }
-    
+
     @Override
     @Transactional
     public PersonaDetenidaDTO registrar(RegistroPersonaDetenidaDTO datos) {
@@ -150,7 +154,8 @@ public class PersonaDetenidaServiceImpl
                     "Los datos de la persona son obligatorios.");
         }
 
-        PersonaDetenida persona = new PersonaDetenida(
+        PersonaDetenida persona = new PersonaDetenida();
+        personaService.actualizarDatosPersonales(persona,
                 datos.getNombre(),
                 datos.getApellido(),
                 datos.getDni(),
@@ -166,18 +171,19 @@ public class PersonaDetenidaServiceImpl
         Integer numeroBanda = datos.getNumeroBanda();
 
         if (numeroBanda != null) {
-            persona.asignarBanda(numeroBanda);
-
+            validarNumeroBanda(numeroBanda);
             if (!bandaRepository.existsById(numeroBanda)) {
                 throw new RecursoNoEncontradoException(
                         "La banda indicada no existe.");
             }
+            persona.setNumeroBanda(numeroBanda);
         }
 
         PersonaDetenida guardada = guardar(persona);
 
-        return new PersonaDetenidaDTO(guardada);
+        return convertirADTO(guardada);
     }
+
     @Override
     @Transactional
     public PersonaDetenidaDTO actualizarDatos(
@@ -201,7 +207,7 @@ public class PersonaDetenidaServiceImpl
                     "Ya existe otra persona con ese DNI.");
         }
 
-        persona.actualizarDatosPersonales(
+        personaService.actualizarDatosPersonales(persona,
                 datos.getNombre(),
                 datos.getApellido(),
                 dni,
@@ -211,8 +217,9 @@ public class PersonaDetenidaServiceImpl
 
         PersonaDetenida actualizada = guardar(persona);
 
-        return new PersonaDetenidaDTO(actualizada);
+        return convertirADTO(actualizada);
     }
+
     private PersonaDetenida guardar(PersonaDetenida persona) {
         try {
             return repositorio.saveAndFlush(persona);
@@ -226,5 +233,16 @@ public class PersonaDetenidaServiceImpl
             }
             throw excepcion;
         }
+    }
+
+    private void validarNumeroBanda(Integer numeroBanda) {
+        if (numeroBanda == null || numeroBanda <= 0) {
+            throw new DatosInvalidosException("El numero de banda debe ser positivo.");
+        }
+    }
+
+    private PersonaDetenidaDTO convertirADTO(PersonaDetenida persona) {
+        return new PersonaDetenidaDTO(persona,
+                personaService.calcularEdad(persona.getFechaNacimiento()));
     }
 }

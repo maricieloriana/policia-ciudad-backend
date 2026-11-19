@@ -20,21 +20,27 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class PersonasVistasTest {
+
     private final VigilanteService vigilantes = mock(VigilanteService.class);
     private final JuezService jueces = mock(JuezService.class);
     private final PersonaDetenidaService detenidas = mock(PersonaDetenidaService.class);
     private final BandaService bandas = mock(BandaService.class);
     private MockMvc mvc;
-    private final UsernamePasswordAuthenticationToken admin =
-            UsernamePasswordAuthenticationToken.authenticated("admin", null,
+    private final UsernamePasswordAuthenticationToken admin
+            = UsernamePasswordAuthenticationToken.authenticated("admin", null,
                     List.of(new SimpleGrantedAuthority("ROLE_ADMINISTRADOR")));
 
-    @BeforeEach void preparar() {
+    @BeforeEach
+    void preparar() {
         var resolver = new ClassLoaderTemplateResolver();
-        resolver.setPrefix("templates/"); resolver.setSuffix(".html");
-        resolver.setTemplateMode("HTML"); resolver.setCharacterEncoding("UTF-8");
-        var motor = new SpringTemplateEngine(); motor.setTemplateResolver(resolver);
-        var vistas = new ThymeleafViewResolver(); vistas.setTemplateEngine(motor);
+        resolver.setPrefix("templates/");
+        resolver.setSuffix(".html");
+        resolver.setTemplateMode("HTML");
+        resolver.setCharacterEncoding("UTF-8");
+        var motor = new SpringTemplateEngine();
+        motor.setTemplateResolver(resolver);
+        var vistas = new ThymeleafViewResolver();
+        vistas.setTemplateEngine(motor);
         vistas.setCharacterEncoding("UTF-8");
         mvc = MockMvcBuilders.standaloneSetup(new VigilanteWebController(vigilantes),
                 new JuezWebController(jueces), new PersonaDetenidaWebController(detenidas, bandas))
@@ -45,7 +51,7 @@ class PersonasVistasTest {
         var j = new JuezDTO(2, "Ana Pérez", "Ana", "Pérez", "00123457",
                 fecha, 26, "ana@example.com", "11111111", 5001, 3);
         var p = new PersonaDetenidaDTO(new PersonaDetenida("Ana", "Pérez", "00123458",
-                fecha, "ana@example.com", "11111111"));
+                fecha, "ana@example.com", "11111111"), 26);
         when(vigilantes.listar()).thenReturn(List.of(v));
         when(jueces.listar()).thenReturn(List.of(j));
         when(detenidas.listar()).thenReturn(List.of(p));
@@ -56,14 +62,16 @@ class PersonasVistasTest {
         when(bandas.listar()).thenReturn(List.of());
     }
 
-    @Test void listadosYPerfilMuestranDatosPersonales() throws Exception {
+    @Test
+    void listadosYPerfilMuestranDatosPersonales() throws Exception {
         for (String ruta : List.of("/vigilantes", "/jueces", "/personas-detenidas", "/mi-perfil")) {
             mvc.perform(get(ruta).principal(admin)).andExpect(status().isOk())
                     .andExpect(content().string(containsString("ana@example.com")));
         }
     }
 
-    @Test void formulariosDeAltaYEdicionGeneranTodosLosCampos() throws Exception {
+    @Test
+    void formulariosDeAltaYEdicionGeneranTodosLosCampos() throws Exception {
         for (String ruta : List.of("/vigilantes/nuevo", "/jueces/nuevo",
                 "/personas-detenidas/nueva", "/vigilantes/1/editar",
                 "/jueces/2/editar", "/personas-detenidas/3/nombre")) {
@@ -73,7 +81,8 @@ class PersonasVistasTest {
         }
     }
 
-    @Test void registroWebConvierteFechaYEntregaDTOCompleto() throws Exception {
+    @Test
+    void registroWebConvierteFechaYEntregaDTOCompleto() throws Exception {
         mvc.perform(post("/vigilantes").param("nombre", "Ana").param("apellido", "Pérez")
                 .param("dni", "00123456").param("fechaNacimiento", "2000-01-01")
                 .param("mail", "ana@example.com").param("telefono", "11111111"))
@@ -82,7 +91,8 @@ class PersonasVistasTest {
                 && d.getFechaNacimiento().equals(LocalDate.of(2000, 1, 1))));
     }
 
-    @Test void fechaMalFormadaRegresaAlFormulario() throws Exception {
+    @Test
+    void fechaMalFormadaRegresaAlFormulario() throws Exception {
         mvc.perform(post("/jueces").param("fechaNacimiento", "no-es-fecha"))
                 .andExpect(status().isOk()).andExpect(view().name("juez-formulario"))
                 .andExpect(content().string(containsString("Revis")));

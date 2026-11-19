@@ -1,6 +1,5 @@
 package com.policiaciudad.modelo;
 
-import com.policiaciudad.exception.DatosInvalidosException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,27 +26,13 @@ public class Asalto {
     private LocalDate fecha; // Registra el día del hecho
 
     protected Asalto() {
-        // Constructor vacío necesario para que JPA reconstruya el objeto
+        // Constructor necesario para JPA.
     }
 
-    public Asalto(int codigoSucursal, int idPersonaDetenida,
-            LocalDate fecha) {
-
-        if (codigoSucursal <= 0) {
-            throw new DatosInvalidosException(
-                    "El codigo de sucursal debe ser positivo."
-            );
-        }
-
-        if (idPersonaDetenida <= 0) {
-            throw new DatosInvalidosException(
-                    "El ID de la persona detenida debe ser positivo."
-            );
-        }
-
+    public Asalto(int codigoSucursal, int idPersonaDetenida, LocalDate fecha) {
         this.codigoSucursal = codigoSucursal;
         this.idPersonaDetenida = idPersonaDetenida;
-        corregirFecha(fecha);
+        this.fecha = fecha;
     }
 
     public Integer getId() {
@@ -66,13 +51,7 @@ public class Asalto {
         return fecha;
     }
 
-    public void corregirFecha(LocalDate fecha) { // Permite modificar la fecha y rechaza null
-        if (fecha == null) {
-            throw new DatosInvalidosException(
-                    "La fecha del asalto es obligatoria."
-            );
-        }
-
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 }

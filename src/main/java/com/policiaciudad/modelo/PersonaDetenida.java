@@ -1,6 +1,5 @@
 package com.policiaciudad.modelo;
 
-import com.policiaciudad.exception.DatosInvalidosException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -13,48 +12,24 @@ public class PersonaDetenida extends Persona {
     @Column(name = "numero_banda") // Admite NULL porque la banda es opcional
     private Integer numeroBanda; // Utiliza Integer porque puede ser null: significa que no tiene una banda asignada
 
-    protected PersonaDetenida() {
-        super(); // Constructor vacío necesario para que JPA reconstruya el objeto
+    public PersonaDetenida() {
+        // Constructor necesario para JPA.
     }
 
     public PersonaDetenida(String nombreCompleto) {
-        super(nombreCompleto); // Reutiliza la validación del nombre de Persona
+        super(nombreCompleto);
+    }
+
+    public PersonaDetenida(String nombre, String apellido, String dni,
+            LocalDate fechaNacimiento, String mail, String telefono) {
+        super(nombre, apellido, dni, fechaNacimiento, mail, telefono);
     }
 
     public Integer getNumeroBanda() {
         return numeroBanda;
     }
 
-    public void asignarBanda(Integer numeroBanda) { // Recibe un número positivo
-        if (numeroBanda == null || numeroBanda <= 0) {
-            throw new DatosInvalidosException(
-                    "El numero de banda debe ser positivo."
-            );
-        }
-
+    public void setNumeroBanda(Integer numeroBanda) {
         this.numeroBanda = numeroBanda;
-    }
-
-    public void quitarBanda() { // Elimina la vinculación
-        this.numeroBanda = null;
-    }
-    
-    public PersonaDetenida(
-            String nombre,
-            String apellido,
-            String dni,
-            LocalDate fechaNacimiento,
-            String mail,
-            String telefono) {
-
-        super();
-
-        actualizarDatosPersonales(
-                nombre,
-                apellido,
-                dni,
-                fechaNacimiento,
-                mail,
-                telefono);
     }
 }

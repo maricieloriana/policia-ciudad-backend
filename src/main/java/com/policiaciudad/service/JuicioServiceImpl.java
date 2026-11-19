@@ -53,7 +53,13 @@ public class JuicioServiceImpl implements JuicioService {
             );
         }
 
-        // El modelo valida IDs positivos y coherencia de la resolución
+        if (idAsalto <= 0 || idPersonaDetenida <= 0 || idJuez <= 0) {
+            throw new DatosInvalidosException(
+                    "Los identificadores deben ser positivos.");
+        }
+
+        validarResolucion(condenado, aniosCarcel);
+
         Juicio juicio = new Juicio(
                 idAsalto,
                 idPersonaDetenida,
@@ -106,6 +112,7 @@ public class JuicioServiceImpl implements JuicioService {
                 guardado.getAniosCarcel()
         );
     }
+
     @Override
     @Transactional(readOnly = true) // Consulta sin modificar registros
     public List<JuicioDTO> listar() {
@@ -122,6 +129,7 @@ public class JuicioServiceImpl implements JuicioService {
                 )) // Convierte cada entidad en un DTO
                 .toList();
     }
+
     @Override
     @Transactional(readOnly = true)
     public JuicioDTO consultarPorId(int id) {
@@ -144,6 +152,7 @@ public class JuicioServiceImpl implements JuicioService {
                 juicio.isCondenado(),
                 juicio.getAniosCarcel());
     }
+
     @Override
     @Transactional
     public JuicioDTO actualizarResolucion(
@@ -165,21 +174,9 @@ public class JuicioServiceImpl implements JuicioService {
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "No existe un juicio con el identificador " + id + "."));
 
-        if (condenado) {
-
-            // El modelo exige años positivos para una condena
-            juicio.condenar(aniosCarcel);
-
-        } else {
-
-            // Una absolución debe tener cero años de cárcel
-            if (aniosCarcel != 0) {
-                throw new DatosInvalidosException(
-                        "Una absolucion debe tener cero anios de carcel.");
-            }
-
-            juicio.absolver();
-        }
+        validarResolucion(condenado, aniosCarcel);
+        juicio.setCondenado(condenado);
+        juicio.setAniosCarcel(aniosCarcel);
 
         Juicio actualizado = repositorio.save(juicio);
 
@@ -191,7 +188,7 @@ public class JuicioServiceImpl implements JuicioService {
                 actualizado.isCondenado(),
                 actualizado.getAniosCarcel());
     }
-    
+
     @Override
     @Transactional
     public void eliminar(int id) {
@@ -207,4 +204,19 @@ public class JuicioServiceImpl implements JuicioService {
 
         repositorio.delete(juicio);
     }
+
+    private void validarResolucion(Boolean condenado, Integer aniosCarcel) {
+        if (condenado == null || aniosCarcel == null) {
+            throw new DatosInvalidosException(
+                    "La condición de condenado y los años de cárcel son obligatorios.");
+        }
+        if (condenado && aniosCarcel <= 0) {
+            throw new DatosInvalidosException("La condena debe ser mayor que cero.");
+        }
+        if (!condenado && aniosCarcel != 0) {
+            throw new DatosInvalidosException(
+                    "Una absolucion debe tener cero anios de carcel.");
+        }
+    }
+
 }
