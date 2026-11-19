@@ -4,5 +4,6 @@ public enum Rol { //define un conjunto fijo de valores permitidos
 
     ADMINISTRADOR,
     INVESTIGADOR,
-    VIGILANTE
+    VIGILANTE,
+    METICHE
 }

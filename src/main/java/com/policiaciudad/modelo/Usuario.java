@@ -64,6 +64,11 @@ public class Usuario {
         return passwordHash;
     }
 
+    @JsonIgnore
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
     public Rol getRol() {
         return rol;
     }

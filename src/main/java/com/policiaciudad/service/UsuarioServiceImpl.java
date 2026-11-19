@@ -189,6 +189,53 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.delete(usuario);
     }
 
+    @Override
+    @Transactional
+    public void cambiarPassword(
+            int id,
+            String nuevaPassword,
+            String nombreUsuarioSolicitante) {
+
+        // Validar la nueva contraseña
+        if (nuevaPassword == null || nuevaPassword.isBlank()
+                || nuevaPassword.length() < 8) {
+            throw new DatosInvalidosException(
+                    "La contraseña debe tener al menos 8 caracteres.");
+        }
+
+        // BCrypt admite hasta 72 bytes
+        if (nuevaPassword.getBytes(StandardCharsets.UTF_8).length > 72) {
+            throw new DatosInvalidosException(
+                    "La contraseña no debe superar 72 bytes en UTF-8.");
+        }
+
+        // Comprobar quién está realizando la operación
+        Usuario solicitante = usuarioRepository
+                .findByNombreUsuario(nombreUsuarioSolicitante)
+                .orElseThrow(() -> new AccessDeniedException(
+                "La cuenta solicitante no está disponible."));
+
+        if (solicitante.getRol() != Rol.METICHE) {
+            throw new AccessDeniedException(
+                    "La operación requiere el rol METICHE.");
+        }
+
+        // Buscar al usuario cuya contraseña se quiere cambiar
+        Usuario destino = buscarUsuario(id);
+
+        if (solicitante.getId().equals(destino.getId())) {
+            throw new AccessDeniedException(
+                    "No podes cambiar tu propia contraseña.");
+        }
+
+        // Generar el hash y guardar la nueva contraseña
+        String hash = passwordEncoder.encode(nuevaPassword);
+
+        destino.setPasswordHash(hash);
+
+        usuarioRepository.save(destino);
+    }
+
     private Usuario buscarUsuario(int id) {
         if (id <= 0) {
             throw new DatosInvalidosException(
@@ -196,7 +243,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "No existe una cuenta con el identificador " + id + "."));
+                "No existe una cuenta con el identificador " + id + "."));
     }
 
     private void validarOperacion(Usuario cuenta, Rol rolDestino,
@@ -205,7 +252,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario administrador = usuarioRepository
                 .findByNombreUsuario(nombreAdministrador)
                 .orElseThrow(() -> new AccessDeniedException(
-                        "La cuenta administradora no esta disponible."));
+                "La cuenta administradora no esta disponible."));
         if (administrador.getRol() != Rol.ADMINISTRADOR) {
             throw new AccessDeniedException("La operacion requiere un administrador.");
         }

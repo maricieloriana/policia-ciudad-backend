@@ -25,6 +25,8 @@ public interface UsuarioService {
             String nombreAdministrador);
 
     void eliminar(int id, String nombreAdministrador);
+    
+    void cambiarPassword(int id, String nuevaPassword, String nombreUsuarioSolicitante);
 
     void crearAdministradorInicial(String nombreUsuario, String contrasenia);
 
