@@ -1,11 +1,15 @@
 package com.policiaciudad.controller;
 
+import com.policiaciudad.dto.CambioPasswordDTO;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import com.policiaciudad.dto.RegistroUsuarioDTO;
 import com.policiaciudad.dto.UsuarioDTO;
 import com.policiaciudad.modelo.Usuario;
 import com.policiaciudad.service.UsuarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,6 +49,22 @@ public class UsuarioController {
                 .status(HttpStatus.CREATED)
                 .body(respuesta);
     }
+
+    @PutMapping("/{id}/password")
+    public ResponseEntity<Void> cambiarPassword(
+            @PathVariable int id,
+            @RequestBody CambioPasswordDTO datos,
+            Authentication autenticacion) {
+
+        servicio.cambiarPassword(
+                id,
+                datos.getNuevaPassword(),
+                autenticacion.getName()
+        );
+
+        return ResponseEntity.noContent().build();
+    }
 }
+
 //el controlador recibe RegistroUsuarioDTO, delega en UsuarioService y responde 
 //HTTP 201 con UsuarioDTO. Spring Security comprueba el rol y el token CSRF antes de ejecutar el controlador.

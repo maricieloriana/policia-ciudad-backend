@@ -228,12 +228,10 @@ public class UsuarioServiceImpl implements UsuarioService {
                     "No podes cambiar tu propia contraseña.");
         }
 
-        // Generar el hash y guardar la nueva contraseña
+        // Generar el hash y actualizarlo mediante el Repository
         String hash = passwordEncoder.encode(nuevaPassword);
 
-        destino.setPasswordHash(hash);
-
-        usuarioRepository.save(destino);
+        usuarioRepository.actualizarPasswordHash(id, hash);
     }
 
     private Usuario buscarUsuario(int id) {

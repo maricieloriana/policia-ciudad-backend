@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>run</actionName>
+            <recursive>false</recursive>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:3.5.1:exec</goal>
+            </goals>
+            <properties>
+                <exec.vmArgs>-DADMIN_INICIAL_USUARIO=adminInicial -DADMIN_INICIAL_PASSWORD=adminprueba123 -DMETICHE_INICIAL_USUARIO=metiche -DMETICHE_INICIAL_PASSWORD=metiche123</exec.vmArgs>
+                <exec.args>${exec.vmArgs} -Dspring.profiles.active=carga-inicial -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
+                <exec.appArgs></exec.appArgs>
+                <exec.mainClass>${packageClassName}</exec.mainClass>
+                <exec.executable>java</exec.executable>
+            </properties>
+        </action>
+    </actions>

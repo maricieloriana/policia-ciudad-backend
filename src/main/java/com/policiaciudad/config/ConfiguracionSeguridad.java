@@ -49,6 +49,10 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.POST, "/api/usuarios")
                         .hasRole("ADMINISTRADOR")
                         
+                        // METICHE solamente puede cambiar contraseñas
+                        .requestMatchers(HttpMethod.PUT, "/api/usuarios/{id}/password")
+                        .hasRole("METICHE")
+                        
                         // Administradores e investigadores pueden consultar todas las contrataciones
                         .requestMatchers(HttpMethod.GET, "/api/contrataciones")
                         .hasAnyRole("ADMINISTRADOR", "INVESTIGADOR")
