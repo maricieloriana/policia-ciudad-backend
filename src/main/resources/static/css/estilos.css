@@ -243,6 +243,11 @@ td.acciones-celda a.boton {
     white-space: nowrap;
 }
 
+/* Ancho de los campos de entrada en las acciones */
+td.acciones-celda input {
+    width: 220px;
+}
+
 @media (max-width: 600px) {
     .pagina-listado header,
     .pagina-listado main {

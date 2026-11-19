@@ -213,6 +213,14 @@ public class ConfiguracionSeguridad {
                         .requestMatchers(HttpMethod.GET, "/vigilantes")
                         .hasAnyRole("ADMINISTRADOR", "INVESTIGADOR")
                         
+                        // Solo el METICHE puede acceder a su panel
+                        .requestMatchers(HttpMethod.GET, "/metiche")
+                        .hasRole("METICHE")
+
+                        // Solo el METICHE puede cambiar contraseñas desde la vista web
+                        .requestMatchers(HttpMethod.POST, "/metiche/usuarios/{id}/password")
+                        .hasRole("METICHE")
+                        
                         // Solo el administrador puede abrir el formulario de registro
                         .requestMatchers(HttpMethod.GET, "/vigilantes/nuevo")
                         .hasRole("ADMINISTRADOR")

@@ -24,6 +24,9 @@ public class InicioController {
 
         modelo.addAttribute("esVigilante", tieneRol(
                 autenticacion, "ROLE_VIGILANTE"));
+        
+        modelo.addAttribute("esMetiche", tieneRol(
+        autenticacion, "ROLE_METICHE"));
 
         // Abre la plantilla templates/inicio.html
         return "inicio";

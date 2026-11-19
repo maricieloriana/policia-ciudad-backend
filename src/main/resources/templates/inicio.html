@@ -78,6 +78,17 @@
                 <li><a th:href="@{/mis-contrataciones}">Mis contrataciones</a></li>
             </ul>
         </section>
+        
+        <!-- Opciones del METICHE -->
+        <section th:if="${esMetiche}">
+        <h3>Panel METICHE</h3>
+        <p>Desde aquí podrás cambiar las contraseñas de otros usuarios.</p>
+
+        <ul>
+          <li><a th:href="@{/metiche}">Gestionar contraseñas de usuarios</a></li>
+        </ul>
+      </section>
+        
     </main>
 
 </body>

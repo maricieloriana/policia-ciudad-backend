@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel METICHE | Policía de la Ciudad</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+    <header>
+        <h1>Policía de la Ciudad</h1>
+        <p>Panel de gestión de contraseñas</p>
+
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Cerrar sesión</button>
+        </form>
+    </header>
+
+    <main>
+        <h2>Panel METICHE</h2>
+
+        <p>
+            Desde aquí podés cambiar las contraseñas
+            de otros usuarios del sistema.
+        </p>
+
+        <p th:if="${mensajeExito}"
+           th:text="${mensajeExito}"
+           role="status">
+        </p>
+
+        <p th:if="${mensajeError}"
+           th:text="${mensajeError}"
+           role="alert">
+        </p>
+
+        <h3>Usuarios registrados</h3>
+
+        <div class="tabla-contenedor">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ID Persona</th>
+                        <th>Nombre de usuario</th>
+                        <th>Rol</th>
+                        <th>Nueva contraseña</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr th:each="usuario : ${usuarios}">
+                        <td th:text="${usuario.id}"></td>
+
+                        <td th:text="${usuario.idPersona}"></td>
+
+                        <td th:text="${usuario.nombreUsuario}"></td>
+
+                        <td th:text="${usuario.rol}"></td>
+
+                        <td class="acciones-celda" colspan="2">
+                            <form
+                                th:action="@{/metiche/usuarios/{id}/password(id=${usuario.id})}"
+                                method="post">
+
+                                <input
+                                    type="password"
+                                    name="nuevaPassword"
+                                    placeholder="Nueva contraseña"
+                                    required>
+
+                                <button type="submit">
+                                    Cambiar contraseña
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+</html>
